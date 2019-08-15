@@ -1,5 +1,5 @@
 # Save stderr to file
-# mst be `source`ed, not `bash`ed.
+# must be `source`ed, not `bash`ed.
 # https://stackoverflow.com/a/52575087/59913
 # https://stackoverflow.com/questions/47302898/redirect-stdout-and-stderr-to-file-permanently-but-keep-printing-them
 echo "💡 ec: Saving stderr to file: ~/.ec/$$.txt"
