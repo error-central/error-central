@@ -1,22 +1,20 @@
 # Error Central
 
-Simple script that captures all stderr and runs it through an `ec` command.
+Simple script that captures all stderr and saves to files
 
 ```
-# For safety, create a nested bash session that you can exit from.
-bash
-
-
-# The magic happens here
-exec 2> >(./ec_main.py 1>&2)
-
+source ec_session.sh
 ```
 
-From now until you type `exit`, all stderr goes through `ec`
 
-Or to save to file
+Install to run for all sessions:
 ```
-exec 2> >(./ec_save.py 1>&2)
+echo 'source /Users/stan/tee-log.sh' >>~/.bashrc
+```
+
+or for MacOS:
+```
+echo 'source /Users/stan/tee-log.sh' >>~/.bash_profile
 ```
 
 ### Notes
