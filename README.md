@@ -2,18 +2,18 @@
 
 Simple script that captures all stderr and saves to files
 
-```
+```bash
 source ec_session.sh
 ```
 
 
 Install to run for all sessions:
-```
+```bash
 echo 'source /Users/stan/tee-log.sh' >>~/.bashrc
 ```
 
 or for MacOS:
-```
+```bash
 echo 'source /Users/stan/tee-log.sh' >>~/.bash_profile
 ```
 
