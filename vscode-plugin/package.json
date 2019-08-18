@@ -1,0 +1,39 @@
+{
+	"name": "error-central",
+	"description": "Error Central VS Code webview",
+	"version": "0.0.1",
+	"publisher": "error-central",
+	"engines": {
+		"vscode": "^1.32.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:errorCentral.start",
+		"onWebviewPanel:errorCentral"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command":"errorCentral.start",
+				"title": "Start error central session",
+				"category": "Error Central"
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "tslint -p ./",
+		"watch": "tsc -w -p ./"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"@types/node": "^10.5.2",
+		"tslint": "^5.16.0",
+		"typescript": "^3.5.1",
+		"@types/vscode": "^1.32.0"
+	}
+}
