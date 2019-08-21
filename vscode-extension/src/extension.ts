@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as tail from 'tail';
 import * as fs from 'fs';
+import * as os from 'os';
 
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
@@ -31,7 +32,7 @@ class ErrorCentralPanel {
 	public static currentPanel: ErrorCentralPanel | undefined;
 
 	public static readonly viewType = 'errorCentral';
-	public errlogPath: string = '/home/tixelbook/.ec';
+	public errlogPath: string = path.join(os.homedir(), '.ec');
 
 	private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionPath: string;
@@ -137,7 +138,7 @@ class ErrorCentralPanel {
             </head>
             <body>
 				<h1 id="lines-of-code-counter">0</h1>
-				
+
 				Ha ha ha this is fun.
 
                 <script nonce="${nonce}" src="${scriptUri}"></script>
@@ -151,7 +152,7 @@ class ErrorCentralPanel {
 		fs.readdir(this.errlogPath, (err, files) => {
 			if (err) {
 				return console.log('Unable to scan ec directory: ' + err);
-			} 
+			}
 
 			//listing all files using forEach
 			files.forEach((file) => {
@@ -162,7 +163,7 @@ class ErrorCentralPanel {
 					//	'separator': null,
 						'follow': true};
 					try {
-						let t = new tail.Tail(path.join(this.errlogPath, file), options);						
+						let t = new tail.Tail(path.join(this.errlogPath, file), options);
 
 						console.log(t);
 						t.on('line', (data) => {
