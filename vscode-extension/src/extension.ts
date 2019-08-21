@@ -155,13 +155,13 @@ class ErrorCentralPanel {
 			}
 
 			files.forEach((file) => {
-				if (file in this._knownErrlogs === false) {
+				const filePath = path.join(this.errlogPath, file)
+				if (filePath in this._knownErrlogs === false) {
 					const options = {
 						'separator': 'Ʋ', // Set to some uncommmon character as line separator in order to process whole blobs
 						'follow': true,
 						'flushAtEOF': true};
 					try {
-						const filePath = path.join(this.errlogPath, file)
 						let t = new tail.Tail(filePath, options);
 						this._knownErrlogs[filePath] = t;
 						console.log(`Now tailing ${filePath}`);
