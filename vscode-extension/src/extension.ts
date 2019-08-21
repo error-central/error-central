@@ -37,7 +37,7 @@ class ErrorCentralPanel {
 	private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionPath: string;
 	private _disposables: vscode.Disposable[] = [];
-	private _knownErrlogs: {[path:string]: any} = {};
+	private _knownErrlogs: {[path:string]: tail.Tail} = {};
 
 	public static createOrShow(extensionPath: string) {
 		const column = vscode.window.activeTextEditor
@@ -76,7 +76,7 @@ class ErrorCentralPanel {
 		this._extensionPath = extensionPath;
 
 		this._panel.webview.html = this._getHtmlForWebview();
-		this._checkForErrlogs();
+		setInterval(() => this._checkForErrlogs(), 800);
 
 		// Listen for when the panel is disposed
 		// This happens when the user closes the panel or when the panel is closed programatically
@@ -156,19 +156,19 @@ class ErrorCentralPanel {
 
 			//listing all files using forEach
 			files.forEach((file) => {
-				console.log(file);
-				//return;
-				if (true) { //file in this._knownErrlogs === false){
+				if (file in this._knownErrlogs === false){
 					const options = {
-					//	'separator': null,
-						'follow': true};
+						'separator': 'Ʋ', // set to some uncommmon character as line separator in order to process whole blobs
+						'follow': true,
+						'flushAtEOF': true};
 					try {
 						let t = new tail.Tail(path.join(this.errlogPath, file), options);
+						this._knownErrlogs[file] = t;
 
 						console.log(t);
 						t.on('line', (data) => {
 							console.log(data);
-						})
+						});
 					} catch (error) {
 						console.log(error);
 					}
