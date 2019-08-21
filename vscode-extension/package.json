@@ -29,7 +29,10 @@
 		"lint": "tslint -p ./",
 		"watch": "tsc -w -p ./"
 	},
-	"dependencies": {},
+	"dependencies": {
+		"@types/tail": "^1.2.1",
+		"tail": "^2.0.3"
+	},
 	"devDependencies": {
 		"@types/node": "^10.5.2",
 		"tslint": "^5.16.0",

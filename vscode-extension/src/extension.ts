@@ -1,5 +1,7 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
+import * as tail from 'tail';
+import * as fs from 'fs';
 
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
@@ -29,10 +31,12 @@ class ErrorCentralPanel {
 	public static currentPanel: ErrorCentralPanel | undefined;
 
 	public static readonly viewType = 'errorCentral';
+	public errlogPath: string = '/home/tixelbook/.ec';
 
 	private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionPath: string;
 	private _disposables: vscode.Disposable[] = [];
+	private _knownErrlogs: {[path:string]: any} = {};
 
 	public static createOrShow(extensionPath: string) {
 		const column = vscode.window.activeTextEditor
@@ -71,6 +75,7 @@ class ErrorCentralPanel {
 		this._extensionPath = extensionPath;
 
 		this._panel.webview.html = this._getHtmlForWebview();
+		this._checkForErrlogs();
 
 		// Listen for when the panel is disposed
 		// This happens when the user closes the panel or when the panel is closed programatically
@@ -138,6 +143,37 @@ class ErrorCentralPanel {
                 <script nonce="${nonce}" src="${scriptUri}"></script>
             </body>b
             </html>`;
+	}
+
+	private _checkForErrlogs(){
+
+		this._knownErrlogs;
+		fs.readdir(this.errlogPath, (err, files) => {
+			if (err) {
+				return console.log('Unable to scan ec directory: ' + err);
+			} 
+
+			//listing all files using forEach
+			files.forEach((file) => {
+				console.log(file);
+				//return;
+				if (true) { //file in this._knownErrlogs === false){
+					const options = {
+					//	'separator': null,
+						'follow': true};
+					try {
+						let t = new tail.Tail(path.join(this.errlogPath, file), options);						
+
+						console.log(t);
+						t.on('line', (data) => {
+							console.log(data);
+						})
+					} catch (error) {
+						console.log(error);
+					}
+				}
+			});
+		  });
 	}
 }
 
