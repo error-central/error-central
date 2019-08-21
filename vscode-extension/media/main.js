@@ -6,10 +6,11 @@
     const oldState = vscode.getState();
 
     const counter = document.getElementById('lines-of-code-counter');
+    const ecDiv = document.getElementById('ec-raw');
     console.log(oldState);
     let currentCount = (oldState && oldState.count) || 0;
     counter.textContent = currentCount;
-
+    console.log("Loaded webview main.js");
     setInterval(() => {
         counter.textContent = currentCount++;
 
@@ -28,11 +29,15 @@
 
     // Handle messages sent from the extension to the webview
     window.addEventListener('message', event => {
+        console.info('🔵 event → ', event);
         const message = event.data; // The json data that the extension sent
         switch (message.command) {
             case 'refactor':
                 currentCount = Math.ceil(currentCount * 0.5);
                 counter.textContent = currentCount;
+                break;
+            case 'ec':
+                ecDiv.textContent += message.data;
                 break;
         }
     });

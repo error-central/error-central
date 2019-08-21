@@ -96,6 +96,13 @@ class ErrorCentralPanel {
 		);
 	}
 
+	public doRefactor() {
+		// Send a message to the webview webview.
+		// You can send any JSON serializable data.
+		this._panel.webview.postMessage({ command: 'refactor' });
+	}
+
+
 	public dispose() {
 		ErrorCentralPanel.currentPanel = undefined;
 
@@ -137,12 +144,12 @@ class ErrorCentralPanel {
                 <title>Error Central</title>
             </head>
             <body>
-				<h1 id="lines-of-code-counter">0</h1>
-
-				Ha ha ha this is fun.
-
-                <script nonce="${nonce}" src="${scriptUri}"></script>
-            </body>b
+							<h1 id="lines-of-code-counter">0</h1>
+							<div id="ec-raw">
+								ec data here
+							</div>
+              <script nonce="${nonce}" src="${scriptUri}"></script>
+            </body>
             </html>`;
 	}
 
@@ -168,6 +175,8 @@ class ErrorCentralPanel {
 						t.on('line', (data) => {
 							// New data has been added to the file
 							console.log(data);
+							// Pass to webview
+							this._panel.webview.postMessage({ command: 'ec', data: data });
 						});
 					} catch (error) {
 						console.error(error);
