@@ -32,7 +32,7 @@ class ErrorCentralPanel {
 	public static currentPanel: ErrorCentralPanel | undefined;
 
 	public static readonly viewType = 'errorCentral';
-	public errlogPath: string = path.join(os.homedir(), '.ec');
+	public errlogPath: string = path.join(os.homedir(), '.ec'); // Directory where we'll tail logs files
 
 	private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionPath: string;
@@ -96,13 +96,6 @@ class ErrorCentralPanel {
 		);
 	}
 
-	public doRefactor() {
-		// Send a message to the webview webview.
-		// You can send any JSON serializable data.
-		this._panel.webview.postMessage({ command: 'refactor' });
-	}
-
-
 	public dispose() {
 		ErrorCentralPanel.currentPanel = undefined;
 
@@ -143,11 +136,11 @@ class ErrorCentralPanel {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Error Central</title>
             </head>
-            <body>
-							<h1 id="lines-of-code-counter">0</h1>
-							<div id="ec-raw">
+						<body>
+							<h1>Error Central</h1>
+							<pre id="ec-raw">
 								ec data here
-							</div>
+							</pre>
               <script nonce="${nonce}" src="${scriptUri}"></script>
             </body>
             </html>`;
@@ -169,15 +162,16 @@ class ErrorCentralPanel {
 						'follow': true,
 						'flushAtEOF': true};
 					try {
+						// TODO: We should pass any existing filedata to webview at this point
 						let t = new tail.Tail(filePath, options);
-						this._knownErrlogs[filePath] = t;
-						console.log(`Now tailing ${filePath}`);
 						t.on('line', (data) => {
 							// New data has been added to the file
-							console.log(data);
+							// console.log(data);
 							// Pass to webview
 							this._panel.webview.postMessage({ command: 'ec', data: data });
 						});
+						this._knownErrlogs[filePath] = t;
+						console.log(`Now tailing ${filePath}`);
 					} catch (error) {
 						console.error(error);
 					}
