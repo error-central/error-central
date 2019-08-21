@@ -37,7 +37,7 @@ class ErrorCentralPanel {
 	private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionPath: string;
 	private _disposables: vscode.Disposable[] = [];
-	private _knownErrlogs: {[path:string]: tail.Tail} = {};
+	private _knownErrlogs: {[path:string]: tail.Tail} = {}; // Known file paths that we're tailing
 
 	public static createOrShow(extensionPath: string) {
 		const column = vscode.window.activeTextEditor
@@ -146,35 +146,35 @@ class ErrorCentralPanel {
             </html>`;
 	}
 
-	private _checkForErrlogs(){
+	private _checkForErrlogs() {
 
 		this._knownErrlogs;
 		fs.readdir(this.errlogPath, (err, files) => {
 			if (err) {
-				return console.log('Unable to scan ec directory: ' + err);
+				return console.error(`Unable to scan ec directory: ${err}`);
 			}
 
-			//listing all files using forEach
 			files.forEach((file) => {
-				if (file in this._knownErrlogs === false){
+				if (file in this._knownErrlogs === false) {
 					const options = {
-						'separator': 'Ʋ', // set to some uncommmon character as line separator in order to process whole blobs
+						'separator': 'Ʋ', // Set to some uncommmon character as line separator in order to process whole blobs
 						'follow': true,
 						'flushAtEOF': true};
 					try {
-						let t = new tail.Tail(path.join(this.errlogPath, file), options);
-						this._knownErrlogs[file] = t;
-
-						console.log(t);
+						const filePath = path.join(this.errlogPath, file)
+						let t = new tail.Tail(filePath, options);
+						this._knownErrlogs[filePath] = t;
+						console.log(`Now tailing ${filePath}`);
 						t.on('line', (data) => {
+							// New data has been added to the file
 							console.log(data);
 						});
 					} catch (error) {
-						console.log(error);
+						console.error(error);
 					}
 				}
 			});
-		  });
+		});
 	}
 }
 
