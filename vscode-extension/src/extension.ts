@@ -166,9 +166,12 @@ class ErrorCentralPanel {
 						let t = new tail.Tail(filePath, options);
 						t.on('line', (data) => {
 							// New data has been added to the file
-							// console.log(data);
-							// Pass to webview
-							this._panel.webview.postMessage({ command: 'ec', data: data });
+
+							let parsed = runParsers(data);
+							if (parsed.length > 0) {
+								// Pass to webview
+								this._panel.webview.postMessage({ command: 'ec', data: parsed[parsed.length - 1] });
+							}
 						});
 						this._knownErrlogs[filePath] = t;
 						console.log(`Now tailing ${filePath}`);
@@ -188,4 +191,23 @@ function getNonce() {
 		text += possible.charAt(Math.floor(Math.random() * possible.length));
 	}
 	return text;
+}
+
+function regexParser(lines:string, regex:RegExp) {
+	return lines.split(regex).reduce((accumulator:string[], line) => {
+			if(/^(\w+):\s(.*)$/.test(line)) {
+				accumulator.push(line);
+			}
+			return accumulator;
+		}, []);
+}
+
+function runParsers(lines:string) {
+	for(var regex of [/\r\n|\n|\r/, /^.*(Error|Thrown): .*$/]) {
+		let parsed = regexParser(lines, regex);
+		if (parsed.length > 0) {
+			return parsed;
+		}
+	}
+	return [];
 }
