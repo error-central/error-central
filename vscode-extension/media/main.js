@@ -8,8 +8,8 @@
     if (oldState) {
         // Webview is being restored
         console.log(oldState);
-        ecDiv.textContent = "Restoring stderr...\n"
-        ecDiv.textContent += oldState.ecDivTextContent;
+        ecDiv.innerHTML = "Restoring stderr...\n"
+        ecDiv.innerHTML += oldState.ecDivTextContent;
     }
     else {
         // Webview is launched for first time
@@ -20,8 +20,8 @@
         const message = event.data; // The json data that the extension sent
         switch (message.command) {
             case 'ec':
-                ecDiv.textContent += message.data + "\n";
-                vscode.setState({ ecDivTextContent: ecDiv.textContent });
+                ecDiv.innerHTML += "<div class='errorMessage'>" + message.data + "</div>";
+                vscode.setState({ ecDivTextContent: ecDiv.innerHTML });
                 break;
         }
     });

@@ -5,6 +5,7 @@ h1 {
 
 .errorMessage {
     padding: 5px;
+    margin-top: 5px;
     border: 1px solid gray;
 
     /* Imitate <pre> */
