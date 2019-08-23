@@ -166,11 +166,12 @@ class ErrorCentralPanel {
 						let t = new tail.Tail(filePath, options);
 						t.on('line', (data) => {
 							// New data has been added to the file
-
 							let parsed = runParsers(data);
 							if (parsed.length > 0) {
+								// For now, just select the last error found
+								const foundError = parsed[parsed.length - 1];
 								// Pass to webview
-								this._panel.webview.postMessage({ command: 'ec', data: parsed[parsed.length - 1] });
+								this._panel.webview.postMessage({ command: 'ec', data: foundError });
 							}
 						});
 						this._knownErrlogs[filePath] = t;
@@ -193,9 +194,10 @@ function getNonce() {
 	return text;
 }
 
+// Return lines that match the regex
 function regexParser(lines:string, regex:RegExp) {
 	return lines.split(regex).reduce((accumulator:string[], line) => {
-			if(/^(\w+):\s(.*)$/.test(line)) {
+			if (/^(\w+):\s(.*)$/.test(line)) {
 				accumulator.push(line);
 			}
 			return accumulator;
@@ -203,11 +205,18 @@ function regexParser(lines:string, regex:RegExp) {
 }
 
 function runParsers(lines:string) {
-	for(var regex of [/\r\n|\n|\r/, /^.*(Error|Thrown): .*$/]) {
+	// Patterns for error messages
+	const errorRegexs = [
+		/\r\n|\n|\r/,
+		/^.*(Error|Thrown): .*$/
+	];
+	for (const regex of errorRegexs) {
 		let parsed = regexParser(lines, regex);
 		if (parsed.length > 0) {
+			// We found an error
 			return parsed;
 		}
 	}
+	// No errors found
 	return [];
 }
