@@ -185,8 +185,8 @@ function getNonce() {
 function containsError(data:string) {
 	// Patterns for error messages
 	const errorRegexs = [
-		/File "[^"]*",.*\n[a-zA-Z0-9]*:.*/g, // Python
-		/^.*(Error|Thrown): .*$/g // Node
+		/File "[^"]*",.*\n[a-zA-Z0-9]*:.*/gms, // Python
+		/^.*(Error|Thrown): .*$/gms // Node
 	];
 	for (const regex of errorRegexs) {
 		if (regex.test(data)) {
