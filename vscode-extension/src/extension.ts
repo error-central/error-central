@@ -162,16 +162,14 @@ class ErrorCentralPanel {
 						'follow': true,
 						'flushAtEOF': true};
 					try {
-						// TODO: We should pass any existing filedata to webview at this point
+						// TODO: We should pass any existing filedata to webview at this point,
+						//       i.e. data that was there before we started tailing.
 						let t = new tail.Tail(filePath, options);
 						t.on('line', (data) => {
 							// New data has been added to the file
-							let parsed = runParsers(data);
-							if (parsed.length > 0) {
-								// For now, just select the last error found
-								const foundError = parsed[parsed.length - 1];
+							if (containsError(data)) {
 								// Pass to webview
-								this._panel.webview.postMessage({ command: 'ec', data: foundError });
+								this._panel.webview.postMessage({ command: 'ec', data: data });
 							}
 						});
 						this._knownErrlogs[filePath] = t;
@@ -194,29 +192,19 @@ function getNonce() {
 	return text;
 }
 
-// Return lines that match the regex
-function regexParser(lines:string, regex:RegExp) {
-	return lines.split(regex).reduce((accumulator:string[], line) => {
-			if (/^(\w+):\s(.*)$/.test(line)) {
-				accumulator.push(line);
-			}
-			return accumulator;
-		}, []);
-}
-
-function runParsers(lines:string) {
+// Return true if lines have an error message
+function containsError(data:string) {
 	// Patterns for error messages
 	const errorRegexs = [
-		/\r\n|\n|\r/,
-		/^.*(Error|Thrown): .*$/
+		/File "[^"]*",.*\n[a-zA-Z0-9]*:.*/g, // Python
+		/^.*(Error|Thrown): .*$/g // Node
 	];
 	for (const regex of errorRegexs) {
-		let parsed = regexParser(lines, regex);
-		if (parsed.length > 0) {
+		if (regex.test(data)) {
 			// We found an error
-			return parsed;
+			return true;
 		}
 	}
 	// No errors found
-	return [];
+	return false
 }
