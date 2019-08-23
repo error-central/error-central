@@ -115,9 +115,13 @@ class ErrorCentralPanel {
 		const scriptPathOnDisk = vscode.Uri.file(
 			path.join(this._extensionPath, 'media', 'main.js')
 		);
+		const cssPathOnDisk = vscode.Uri.file(
+			path.join(this._extensionPath, 'media', 'main.css')
+		);
 
 		// And the uri we use to load this script in the webview
 		const scriptUri = scriptPathOnDisk.with({ scheme: 'vscode-resource' });
+		const cssUri = cssPathOnDisk.with({ scheme: 'vscode-resource' });
 
 		// Use a nonce to whitelist which scripts can be run
 		const nonce = getNonce();
@@ -131,9 +135,10 @@ class ErrorCentralPanel {
                 Use a content security policy to only allow loading images from https or from our extension directory,
                 and only allow scripts that have a specific nonce.
                 -->
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src vscode-resource: https:; script-src 'nonce-${nonce}';">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src vscode-resource: https:; script-src 'nonce-${nonce}'; style-src 'nonce-${nonce}'">
 
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+								<meta name="viewport" content="width=device-width, initial-scale=1.0">
+								<link rel="stylesheet" nonce="${nonce}" href="${cssUri}">
                 <title>Error Central</title>
             </head>
 						<body>
