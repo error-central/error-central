@@ -31,7 +31,7 @@
                 };
 
                 let link = document.createElement('a');
-                link.href = `http://google.com/?q=${encodeURIComponent(message.data)}`
+                link.href = `http://google.com/search?q=${encodeURIComponent(message.data)}`
                 link.innerText = "Search on Google"
 
                 ecDiv.appendChild(errorDiv);
