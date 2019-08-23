@@ -129,7 +129,7 @@ class ErrorCentralPanel {
 		// Use a nonce to whitelist which scripts can be run
 		const nonce = getNonce();
 		// Fill in vars.
-		// TODO: Can we avoid eval()?
+		// TODO: Can we avoid eval()? See: https://stackoverflow.com/questions/29182244/convert-a-string-to-a-template-string
 		let filledHtml = eval('`' + html + '`');
 
 		return filledHtml;
