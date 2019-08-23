@@ -20,7 +20,7 @@
         const message = event.data; // The json data that the extension sent
         switch (message.command) {
             case 'ec':
-                ecDiv.textContent += message.data;
+                ecDiv.textContent += message.data + "\n";
                 vscode.setState({ ecDivTextContent: ecDiv.textContent });
                 break;
         }
