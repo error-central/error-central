@@ -8,6 +8,8 @@ interface IFoundError {
 	language: string; // Language error found in
 	rawText: string; // Entire blob of error message
 	title: string; // Best title to show
+	sessionId?: string; // Optional identifier for terminal/session
+	googleQs?: Array<string>;
 }
 
 
@@ -143,7 +145,6 @@ class ErrorCentralPanel {
 	}
 
 	private _checkForErrlogs() {
-
 		this._knownErrlogs;
 		fs.readdir(this.errlogPath, (err, files) => {
 			if (err) {
@@ -162,12 +163,13 @@ class ErrorCentralPanel {
 						//       i.e. data that was there before we started tailing.
 						let t = new tail.Tail(filePath, options);
 						t.on('line', (data) => {
-							console.info(filePath) // TODO: Pass PID or some identifier along with `foundError`
+							// console.info(filePath) // TODO: Pass PID or some identifier along with `foundError`
 							// New data has been added to the file
 							if (data.length == 1) return; // Skip a single char; probably user typing in bash
-							const foundError = this.containsError(data)
+							let foundError = this.containsError(data)
 							if (foundError) {
 								// Pass to webview
+								foundError.sessionId = filePath; // Remember which ession
 								this._panel.webview.postMessage({ command: 'ec', error: foundError });
 							}
 						});
@@ -216,6 +218,7 @@ function findNodeError(data: string): IFoundError | null {
 		language: "node",
 		rawText: data,
 		title,
+		googleQs: [title],
 	};
 	return result;
 }
@@ -230,6 +233,7 @@ function findBashError(data: string): IFoundError | null {
 		language: "bash",
 		rawText: data,
 		title,
+		googleQs: [title],
 	};
 	return result;
 }
@@ -242,11 +246,14 @@ function findPythonError(data: string): IFoundError|null {
 
 	// Last line is title
 	const title = data.trim().split("\n").pop() || ""
+	// Brute force take out things that look like variables in error output
+	const strippedQ = title.replace(/'.*'/, "")
 
 	const result: IFoundError = {
 		language: "python",
 		rawText: data,
 		title,
+		googleQs: [title, strippedQ],
 	};
 	return result;
 }

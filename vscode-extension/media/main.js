@@ -8,12 +8,12 @@
   if (oldState) {
     // Webview is being restored
     console.log(oldState);
-    ecDiv.innerHTML = "Restoring stderr...\n"
+    ecDiv.innerHTML = "Restoring stderr...\n";
     ecDiv.innerHTML += oldState.ecDivTextContent;
   }
   else {
     // Webview is launched for first time
-    ecDiv.textContent = "Montioring stderr...\n"
+    ecDiv.textContent = "Montioring stderr...\n";
   }
   // Handle messages sent from the extension to the webview
   window.addEventListener('message', event => {
@@ -27,11 +27,13 @@
         errorDiv.getElementsByClassName('ec-title')[0].innerText = message.error.title;
         errorDiv.getElementsByClassName('ec-lines')[0].innerText = message.error.rawText;
 
-        let link = document.createElement('a');
-        link.href = `http://google.com/search?q=${encodeURIComponent(message.error.title)}`
-        link.innerText = "Search on Google"
-        errorDiv.getElementsByClassName('ec-links')[0].appendChild(link)
-
+        for (const q of message.error.googleQs) {
+          let link = document.createElement('a');
+          link.href = `http://google.com/search?q=${encodeURIComponent(q)}`
+          link.innerText = q;
+          link.className = "ec-google-link";
+          errorDiv.getElementsByClassName('ec-links')[0].appendChild(link);
+        }
         ecDiv.appendChild(errorDiv);
 
         // Remember our total state

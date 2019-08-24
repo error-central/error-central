@@ -2,6 +2,16 @@ h1 {
   color: green
 }
 
+.hidden {
+  visibility:hidden;
+  display: none;
+  position: absolute;
+  height: 0;
+  width: 0;
+  top: 0;
+  left: 0;
+}
+
 .ec-error-template {
   padding: 5px;
   margin-top: 5px;
@@ -19,4 +29,8 @@ h1 {
   unicode-bidi: embed;
   font-family: monospace;
   white-space: pre;
+}
+
+.ec-links a {
+  margin: 5px;
 }
