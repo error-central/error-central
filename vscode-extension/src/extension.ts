@@ -163,6 +163,7 @@ class ErrorCentralPanel {
 						let t = new tail.Tail(filePath, options);
 						t.on('line', (data) => {
 							// New data has been added to the file
+							if (data.length == 1) return; // Skip a single char; probably user typing in bash
 							const foundError = this.containsError(data)
 							if (foundError) {
 								// Pass to webview
@@ -185,6 +186,7 @@ class ErrorCentralPanel {
 		const errorDetectors = [
 			findPythonError,
 			findNodeError,
+			findBashError,
 		];
 		for (const detector of errorDetectors) {
 			const foundError = detector(data)
@@ -211,6 +213,20 @@ function findNodeError(data: string): IFoundError | null {
 
 	const result: IFoundError = {
 		language: "node",
+		rawText: data,
+		title,
+	};
+	return result;
+}
+
+function findBashError(data: string): IFoundError | null {
+	const regex = /^bash: */gms
+	if (!regex.test(data)) {
+		return null; // No error found in data, we're done!
+	}
+	const title = data.trim().split("\n")[0] || ""
+	const result: IFoundError = {
+		language: "bash",
 		rawText: data,
 		title,
 	};
