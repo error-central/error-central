@@ -43,6 +43,7 @@ class ErrorCentralPanel {
 
 	public static readonly viewType = 'errorCentral';
 	public errlogPath: string = path.join(os.homedir(), '.ec'); // Directory where we'll tail logs files
+	public SOQueryTemplate: string = "https://api.stackexchange.com/2.2/search/advanced?order=desc&sort=relevance&accepted=True&site=stackoverflow&q=";
 
 	private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionPath: string;
@@ -173,6 +174,7 @@ class ErrorCentralPanel {
 
 							if (foundError) {
 								// Pass to webview
+								//this.queryStackOverflowAPI(foundError.title);
 								foundError.sessionId = filePath; // Remember which ession
 								this._panel.webview.postMessage({ command: 'ec', error: foundError });
 							}
@@ -206,22 +208,33 @@ class ErrorCentralPanel {
 		return null
 	}
 
+	public queryStackOverflowAPI(q:string) {
+		console.log('Querying StackOverflow with: ' + q);
+		let soResult = vscode_helpers.GET(this.SOQueryTemplate + encodeURIComponent(q));
+		soResult.then( response => {
+			console.log(response);
+		});
+		soResult.catch(err => {
+			console.log(err);
+		})
+	}
+
 	public send2Server(data:string) {
 		const url = 'http://' + this.ecHost + "/api/query/plaintext";
 		console.log("incoming:");
 		console.log(data);
 
-		let ec_server_result = vscode_helpers.POST(
+		let ecServerResult = vscode_helpers.POST(
 			url,
 			JSON.stringify({ text: data }), {
 			'Content-Type': 'application/json; charset=utf8'});
 
-		ec_server_result.then(response => {
+		ecServerResult.then(response => {
 			console.log('there has been a response');
 			console.log(response);
 		});
 
-		ec_server_result.catch(err => {
+		ecServerResult.catch(err => {
 			console.log('we had an error');
 			console.log(err);
 		});
