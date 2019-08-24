@@ -20,22 +20,19 @@
         const message = event.data; // The json data that the extension sent
         switch (message.command) {
             case 'ec':
-                // Add element
-                let errorDiv = document.createElement('div');
-                errorDiv.className = 'errorMessage';
-                errorDiv.innerText = message.data;
-                errorDiv.onclick = function () {
-                    console.info('blah');
-                    // TODO: To open web page: https://stackoverflow.com/questions/34205481/how-to-open-browser-from-visual-studio-code-api
-                    document.location="https://google.com" // Won't work
-                };
+                const errorDivTemplate = document.getElementById('ec-error-template');
+                let errorDiv = errorDivTemplate.cloneNode(true);
+                errorDiv.id = null; // TODO: set to some id
+
+                errorDiv.getElementsByClassName('ec-title')[0].innerText = 'Some error'; // TODO: Replace with name of error
+                errorDiv.getElementsByClassName('ec-lines')[0].innerText = message.data;
 
                 let link = document.createElement('a');
                 link.href = `http://google.com/search?q=${encodeURIComponent(message.data)}`
                 link.innerText = "Search on Google"
+                errorDiv.getElementsByClassName('ec-links')[0].appendChild(link)
 
                 ecDiv.appendChild(errorDiv);
-                ecDiv.appendChild(link);
 
                 // Remember our total state
                 vscode.setState({ ecDivTextContent: ecDiv.innerHTML });

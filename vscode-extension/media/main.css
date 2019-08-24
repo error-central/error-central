@@ -1,13 +1,18 @@
 h1 {
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    color: blue
+    color: green
 }
 
-.errorMessage {
+.ec-error-template {
     padding: 5px;
     margin-top: 5px;
     border: 1px solid gray;
+}
 
+.ec-title {
+    font-weight: bold;
+}
+
+.ec-lines {
     /* Imitate <pre> */
     display: block;
     unicode-bidi: embed;
