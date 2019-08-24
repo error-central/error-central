@@ -162,6 +162,7 @@ class ErrorCentralPanel {
 						//       i.e. data that was there before we started tailing.
 						let t = new tail.Tail(filePath, options);
 						t.on('line', (data) => {
+							console.info(filePath) // TODO: Pass PID or some identifier along with `foundError`
 							// New data has been added to the file
 							if (data.length == 1) return; // Skip a single char; probably user typing in bash
 							const foundError = this.containsError(data)
