@@ -1,21 +1,22 @@
 h1 {
-    color: green
+  color: green
 }
 
 .ec-error-template {
-    padding: 5px;
-    margin-top: 5px;
-    border: 1px solid gray;
+  padding: 5px;
+  margin-top: 5px;
+  border: 1px solid gray;
+  border-radius: 5px;
 }
 
 .ec-title {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .ec-lines {
-    /* Imitate <pre> */
-    display: block;
-    unicode-bidi: embed;
-    font-family: monospace;
-    white-space: pre;
+  /* Imitate <pre> */
+  display: block;
+  unicode-bidi: embed;
+  font-family: monospace;
+  white-space: pre;
 }

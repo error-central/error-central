@@ -24,11 +24,11 @@
         let errorDiv = errorDivTemplate.cloneNode(true);
         errorDiv.id = null; // TODO: set to some id
 
-        errorDiv.getElementsByClassName('ec-title')[0].innerText = 'Some error'; // TODO: Replace with name of error
-        errorDiv.getElementsByClassName('ec-lines')[0].innerText = message.data;
+        errorDiv.getElementsByClassName('ec-title')[0].innerText = message.error.title;
+        errorDiv.getElementsByClassName('ec-lines')[0].innerText = message.error.rawText;
 
         let link = document.createElement('a');
-        link.href = `http://google.com/search?q=${encodeURIComponent(message.data)}`
+        link.href = `http://google.com/search?q=${encodeURIComponent(message.error.title)}`
         link.innerText = "Search on Google"
         errorDiv.getElementsByClassName('ec-links')[0].appendChild(link)
 

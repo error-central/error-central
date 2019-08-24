@@ -4,6 +4,13 @@ import * as tail from 'tail';
 import * as fs from 'fs';
 import * as os from 'os';
 
+interface IFoundError {
+	language: string; // Language error found in
+	rawText: string; // Entire blob of error message
+	title: string; // Best title to show
+}
+
+
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand('errorCentral.start', () => {
@@ -156,9 +163,10 @@ class ErrorCentralPanel {
 						let t = new tail.Tail(filePath, options);
 						t.on('line', (data) => {
 							// New data has been added to the file
-							if (containsError(data)) {
+							const foundError = this.containsError(data)
+							if (foundError) {
 								// Pass to webview
-								this._panel.webview.postMessage({ command: 'ec', data: data });
+								this._panel.webview.postMessage({ command: 'ec', error: foundError });
 							}
 						});
 						this._knownErrlogs[filePath] = t;
@@ -170,7 +178,62 @@ class ErrorCentralPanel {
 			});
 		});
 	}
+
+	// Return true if lines have an error message
+	public containsError(data: string): IFoundError | null {
+		// Patterns for error messages
+		const errorDetectors = [
+			findPythonError,
+			findNodeError,
+		];
+		for (const detector of errorDetectors) {
+			const foundError = detector(data)
+			if (foundError) {
+				return foundError
+			}
+		}
+		// No errors found
+		return null
+	}
+
 }
+
+
+
+function findNodeError(data: string): IFoundError | null {
+	const regex = /Thrown:.*\n[a-zA-Z0-9]*:.*/gms
+	if (!regex.test(data)) {
+		return null; // No error found in data, we're done!
+	}
+
+	// Last line is title
+	const title = data.trim().split("\n").pop() || ""
+
+	const result: IFoundError = {
+		language: "node",
+		rawText: data,
+		title,
+	};
+	return result;
+}
+
+function findPythonError(data: string): IFoundError|null {
+	const regex = /File "[^"]*",.*\n[a-zA-Z0-9]*:.*/gms
+	if (!regex.test(data)) {
+		return null; // No error found in data, we're done!
+	}
+
+	// Last line is title
+	const title = data.trim().split("\n").pop() || ""
+
+	const result: IFoundError = {
+		language: "python",
+		rawText: data,
+		title,
+	};
+	return result;
+}
+
 
 function getNonce() {
 	let text = '';
@@ -181,19 +244,3 @@ function getNonce() {
 	return text;
 }
 
-// Return true if lines have an error message
-function containsError(data:string) {
-	// Patterns for error messages
-	const errorRegexs = [
-		/File "[^"]*",.*\n[a-zA-Z0-9]*:.*/gms, // Python
-		/^.*(Error|Thrown): .*$/gms // Node
-	];
-	for (const regex of errorRegexs) {
-		if (regex.test(data)) {
-			// We found an error
-			return true;
-		}
-	}
-	// No errors found
-	return false
-}
