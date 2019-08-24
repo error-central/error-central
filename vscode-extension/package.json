@@ -31,7 +31,8 @@
 	},
 	"dependencies": {
 		"@types/tail": "^1.2.1",
-		"tail": "^2.0.3"
+		"tail": "^2.0.3",
+		"vscode-helpers": "^4.0.1"
 	},
 	"devDependencies": {
 		"@types/node": "^10.5.2",

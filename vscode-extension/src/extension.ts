@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 import * as tail from 'tail';
 import * as fs from 'fs';
 import * as os from 'os';
+import * as vscode_helpers from 'vscode-helpers';
 
 interface IFoundError {
 	language: string; // Language error found in
@@ -47,6 +48,7 @@ class ErrorCentralPanel {
 	private readonly _extensionPath: string;
 	private _disposables: vscode.Disposable[] = [];
 	private _knownErrlogs: {[path:string]: tail.Tail} = {}; // Known file paths that we're tailing
+	private ecHost: string = 'localhost'
 
 	public static createOrShow(extensionPath: string) {
 		const column = vscode.window.activeTextEditor
@@ -164,9 +166,11 @@ class ErrorCentralPanel {
 						let t = new tail.Tail(filePath, options);
 						t.on('line', (data) => {
 							// console.info(filePath) // TODO: Pass PID or some identifier along with `foundError`
+
 							// New data has been added to the file
 							if (data.length == 1) return; // Skip a single char; probably user typing in bash
-							let foundError = this.containsError(data)
+							let foundError = this.containsError(data);
+
 							if (foundError) {
 								// Pass to webview
 								foundError.sessionId = filePath; // Remember which ession
@@ -200,6 +204,27 @@ class ErrorCentralPanel {
 		}
 		// No errors found
 		return null
+	}
+
+	public send2Server(data:string) {
+		const url = 'http://' + this.ecHost + "/api/query/plaintext";
+		console.log("incoming:");
+		console.log(data);
+
+		let ec_server_result = vscode_helpers.POST(
+			url,
+			JSON.stringify({ text: data }), {
+			'Content-Type': 'application/json; charset=utf8'});
+
+		ec_server_result.then(response => {
+			console.log('there has been a response');
+			console.log(response);
+		});
+
+		ec_server_result.catch(err => {
+			console.log('we had an error');
+			console.log(err);
+		});
 	}
 
 }
