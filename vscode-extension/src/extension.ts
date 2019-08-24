@@ -194,6 +194,7 @@ class ErrorCentralPanel {
 		for (const detector of errorDetectors) {
 			const foundError = detector(data)
 			if (foundError) {
+				console.info(`🔵 foundError → `, foundError)
 				return foundError
 			}
 		}

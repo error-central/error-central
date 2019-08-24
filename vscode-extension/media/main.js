@@ -34,6 +34,15 @@
           link.className = "ec-google-link";
           errorDiv.getElementsByClassName('ec-links')[0].appendChild(link);
         }
+
+        // Create issue button
+        // TODO: Flesh this out
+        let link = document.createElement('a');
+        link.href = `https://github.com/error-central/diffenv/issues/new?title=${message.error.title}&body=${message.error.rawText}`
+        link.innerText = 'Create Issue';
+        link.className = "ec-create-gh-issue";
+        errorDiv.getElementsByClassName('ec-links')[0].appendChild(link);
+
         ecDiv.appendChild(errorDiv);
 
         // Remember our total state
