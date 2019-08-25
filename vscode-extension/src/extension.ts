@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 import * as tail from 'tail';
 import * as fs from 'fs';
 import * as os from 'os';
+import * as vscode_helpers from 'vscode-helpers';
 
 interface IFoundError {
 	language: string; // Language error found in
@@ -42,11 +43,13 @@ class ErrorCentralPanel {
 
 	public static readonly viewType = 'errorCentral';
 	public errlogPath: string = path.join(os.homedir(), '.ec', 'sessions'); // Directory where we'll tail logs files
+	public SOQueryTemplate: string = "https://api.stackexchange.com/2.2/search/advanced?order=desc&sort=relevance&accepted=True&site=stackoverflow&q=";
 
 	private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionPath: string;
 	private _disposables: vscode.Disposable[] = [];
 	private _knownErrlogs: {[path:string]: tail.Tail} = {}; // Known file paths that we're tailing
+	private ecHost: string = 'localhost'
 
 	public static createOrShow(extensionPath: string) {
 		const column = vscode.window.activeTextEditor
@@ -164,12 +167,15 @@ class ErrorCentralPanel {
 						let t = new tail.Tail(filePath, options);
 						t.on('line', (data) => {
 							// console.info(filePath) // TODO: Pass PID or some identifier along with `foundError`
+
 							// New data has been added to the file
 							if (data.length == 1) return; // Skip a single char; probably user typing in bash
-							let foundError = this.containsError(data)
+							let foundError = this.containsError(data);
+
 							if (foundError) {
 								// Pass to webview
-								foundError.sessionId = filePath; // Remember which ession
+								//this.queryStackOverflowAPI(foundError.title);
+								foundError.sessionId = filePath; // Include session identifier
 								this._panel.webview.postMessage({ command: 'ec', error: foundError });
 							}
 						});
@@ -200,6 +206,38 @@ class ErrorCentralPanel {
 		}
 		// No errors found
 		return null
+	}
+
+	public queryStackOverflowAPI(q:string) {
+		console.log('Querying StackOverflow with: ' + q);
+		let soResult = vscode_helpers.GET(this.SOQueryTemplate + encodeURIComponent(q));
+		soResult.then( response => {
+			console.log(response);
+		});
+		soResult.catch(err => {
+			console.log(err);
+		})
+	}
+
+	public send2Server(data:string) {
+		const url = 'http://' + this.ecHost + "/api/query/plaintext";
+		console.log("incoming:");
+		console.log(data);
+
+		let ecServerResult = vscode_helpers.POST(
+			url,
+			JSON.stringify({ text: data }), {
+			'Content-Type': 'application/json; charset=utf8'});
+
+		ecServerResult.then(response => {
+			console.log('there has been a response');
+			console.log(response);
+		});
+
+		ecServerResult.catch(err => {
+			console.log('we had an error');
+			console.log(err);
+		});
 	}
 
 }
