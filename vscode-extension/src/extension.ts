@@ -41,7 +41,7 @@ class ErrorCentralPanel {
 	public static currentPanel: ErrorCentralPanel | undefined;
 
 	public static readonly viewType = 'errorCentral';
-	public errlogPath: string = path.join(os.homedir(), '.ec'); // Directory where we'll tail logs files
+	public errlogPath: string = path.join(os.homedir(), '.ec', 'sessions'); // Directory where we'll tail logs files
 
 	private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionPath: string;
