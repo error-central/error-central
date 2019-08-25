@@ -52,6 +52,7 @@ class ErrorCentralPanel {
   private readonly _extensionPath: string;
   private _disposables: vscode.Disposable[] = [];
   private _knownErrlogs: { [path: string]: tail.Tail } = {}; // Known file paths that we're tailing
+  private _knownDocker: Map<string, string> = new Map();
   private ecHost: string = "localhost";
 
   public static createOrShow(extensionPath: string) {
@@ -98,6 +99,7 @@ class ErrorCentralPanel {
 
     this._panel.webview.html = this._getHtmlForWebview();
     setInterval(() => this._checkForErrlogs(), 800);
+    setInterval(() => this._checkForDockerInstances(), 800);
 
     // Listen for when the panel is disposed
     // This happens when the user closes the panel or when the panel is closed programatically
@@ -160,6 +162,7 @@ class ErrorCentralPanel {
 
   private _checkForErrlogs() {
     this._knownErrlogs;
+    vscode_helpers.createDirectoryIfNeeded(this.errlogPath);
     fs.readdir(this.errlogPath, (err, files) => {
       if (err) {
         return console.error(`Unable to scan ec directory: ${err}`);
@@ -199,6 +202,25 @@ class ErrorCentralPanel {
           }
         }
       });
+    });
+  }
+
+  private async _checkForDockerInstances() {
+    const docker_ps = await vscode_helpers.execFile('docker', [ 'ps', '--format={{.Names}}, {{.CreatedAt}}']);
+    const dps_err = docker_ps.stdErr.toString();
+    if(dps_err) {
+      console.log(dps_err);
+    }
+    // convert buffer to list of machine names and iterate over them
+    const ps_output = docker_ps.stdOut.toString().match(/[^\r\n]+/g) || [] ;
+    ps_output.forEach(name_created => {
+      const [name, createdAt] = name_created.split(',');
+      if(this._knownDocker.get(name) !== createdAt) {
+        this._knownDocker.set(name, createdAt);
+        const targetOut = path.join(this.errlogPath, 'docker_' + name + '.out'); 
+        const targetErr = path.join(this.errlogPath, 'docker_' + name + '.err'); 
+        vscode_helpers.execFile('bash', ['-c', 'docker logs -f ' + name + ' > ' + targetOut + ' 2> ' + targetErr + ' &']);
+      }
     });
   }
 
