@@ -178,8 +178,6 @@ class ErrorCentralPanel {
             //       i.e. data that was there before we started tailing.
             let t = new tail.Tail(filePath, options);
             t.on("line", data => {
-              // console.info(filePath) // TODO: Pass PID or some identifier along with `foundError`
-
               // New data has been added to the file
               if (data.length == 1) return; // Skip a single char; probably user typing in bash
               let foundError = this.containsError(data);
@@ -204,7 +202,7 @@ class ErrorCentralPanel {
     });
   }
 
-  // Return true if lines have an error message
+  // Return error info if one found, else null
   public containsError(data: string): IFoundError | null {
     // Patterns for error messages
     const errorDetectors = [findPythonError, findNodeError, findBashError];
