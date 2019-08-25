@@ -1,9 +1,9 @@
 h1 {
-  color: green
+  color: green;
 }
 
 .hidden {
-  visibility:hidden;
+  visibility: hidden;
   display: none;
   position: absolute;
   height: 0;
