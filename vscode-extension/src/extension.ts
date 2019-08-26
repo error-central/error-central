@@ -218,9 +218,9 @@ class ErrorCentralPanel {
     const ps_output = docker_ps.stdOut.toString().match(/[^\r\n]+/g) || [];
     ps_output.forEach(name_created => {
       const [name, createdAt] = name_created.split(",");
-      if (this._knownDocker.get(name) !== createdAt) {
+      if (name && this._knownDocker.get(name) !== createdAt) {
         this._knownDocker.set(name, createdAt);
-        const targetOut = path.join(this.errlogPath, `docker ${name}.out`);
+        const targetOut = path.join(this.errlogPath, `docker_${name}.out`);
         const targetErr = path.join(this.errlogPath, `docker_${name}.err`);
         vscode_helpers.execFile("bash", [
           "-c",
