@@ -206,20 +206,26 @@ class ErrorCentralPanel {
   }
 
   private async _checkForDockerInstances() {
-    const docker_ps = await vscode_helpers.execFile('docker', [ 'ps', '--format={{.Names}}, {{.CreatedAt}}']);
+    const docker_ps = await vscode_helpers.execFile("docker", [
+      "ps",
+      "--format={{.Names}}, {{.CreatedAt}}"
+    ]);
     const dps_err = docker_ps.stdErr.toString();
-    if(dps_err) {
+    if (dps_err) {
       console.log(dps_err);
     }
     // convert buffer to list of machine names and iterate over them
-    const ps_output = docker_ps.stdOut.toString().match(/[^\r\n]+/g) || [] ;
+    const ps_output = docker_ps.stdOut.toString().match(/[^\r\n]+/g) || [];
     ps_output.forEach(name_created => {
-      const [name, createdAt] = name_created.split(',');
-      if(this._knownDocker.get(name) !== createdAt) {
+      const [name, createdAt] = name_created.split(",");
+      if (name && this._knownDocker.get(name) !== createdAt) {
         this._knownDocker.set(name, createdAt);
-        const targetOut = path.join(this.errlogPath, 'docker_' + name + '.out'); 
-        const targetErr = path.join(this.errlogPath, 'docker_' + name + '.err'); 
-        vscode_helpers.execFile('bash', ['-c', 'docker logs -f ' + name + ' > ' + targetOut + ' 2> ' + targetErr + ' &']);
+        const targetOut = path.join(this.errlogPath, `docker_${name}.out`);
+        const targetErr = path.join(this.errlogPath, `docker_${name}.err`);
+        vscode_helpers.execFile("bash", [
+          "-c",
+          `docker logs -f ${name} > ${targetOut} 2> ${targetErr} &`
+        ]);
       }
     });
   }
