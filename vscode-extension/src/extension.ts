@@ -183,6 +183,22 @@ class ErrorCentralPanel {
             t.on("line", data => {
               // New data has been added to the file
               if (data.length == 1) return; // Skip a single char; probably user typing in bash
+
+              let ecResponse = vscode_helpers.POST(
+                `http://${this.ecHost}/api/query/plaintext`,
+                JSON.stringify({ text: data }),
+                { "Content-Type": "application/json; charset=utf8" }
+              );
+
+              ecResponse.then(async response => {
+                const ecPosts = (await response.readBody()).toString("utf8");
+                console.log(ecPosts);
+                this._panel.webview.postMessage({
+                  command: "ec-results",
+                  posts: ecPosts
+                });
+              });
+
               let foundError = this.containsError(data);
 
               if (foundError) {
