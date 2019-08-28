@@ -9,6 +9,7 @@ interface IFoundError {
   language: string; // Language error found in
   rawText: string; // Entire blob of error message
   title: string; // Best title to show
+  blobId?: number; // Id of the individual blob containing error
   sessionId?: string; // Optional identifier for terminal/session
   googleQs?: Array<string>;
 }
@@ -48,6 +49,7 @@ class ErrorCentralPanel {
   public SOQueryTemplate: string =
     "https://api.stackexchange.com/2.2/search/advanced?order=desc&sort=relevance&accepted=True&site=stackoverflow&q=";
 
+  private blobIdCounter = 0;
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionPath: string;
   private _disposables: vscode.Disposable[] = [];
@@ -99,6 +101,9 @@ class ErrorCentralPanel {
 
     this._panel.webview.html = this._getHtmlForWebview();
     setInterval(() => this._checkForErrlogs(), 800);
+
+    // todo: when developing locally we need to not create an infinite loop by tailing
+    // our server's stdout
     setInterval(() => this._checkForDockerInstances(), 800);
 
     // Listen for when the panel is disposed
@@ -180,43 +185,57 @@ class ErrorCentralPanel {
             // TODO: We should pass any existing filedata to webview at this point,
             //       i.e. data that was there before we started tailing.
             let t = new tail.Tail(filePath, options);
-            t.on("line", data => {
-              // New data has been added to the file
-              if (data.length == 1) return; // Skip a single char; probably user typing in bash
+            t.on("line", data => this._handleBlob(data, filePath));
 
-              let ecResponse = vscode_helpers.POST(
-                `http://${this.ecHost}/api/query/plaintext`,
-                JSON.stringify({ text: data }),
-                { "Content-Type": "application/json; charset=utf8" }
-              );
-
-              ecResponse.then(async response => {
-                const ecPosts = (await response.readBody()).toString("utf8");
-                console.log(ecPosts);
-                this._panel.webview.postMessage({
-                  command: "ec-results",
-                  posts: ecPosts
-                });
-              });
-
-              let foundError = this.containsError(data);
-
-              if (foundError) {
-                // Pass to webview
-                //this.queryStackOverflowAPI(foundError.title);
-                foundError.sessionId = filePath; // Include session identifier
-                this._panel.webview.postMessage({
-                  command: "ec",
-                  error: foundError
-                });
-              }
-            });
             this._knownErrlogs[filePath] = t;
             console.log(`Now tailing ${filePath}`);
           } catch (error) {
             console.error(error);
           }
         }
+      });
+    });
+  }
+
+  private _handleBlob(data: any, filePath: string) {
+    // to do make these unique across multiple sessions
+    const ourBlobId = this.blobIdCounter;
+    this.blobIdCounter++;
+    // New data has been added to the file
+    if (data.length == 1) return; // Skip a single char; probably user typing in bash
+
+    let foundError = this.containsError(data);
+    if (foundError) {
+      // Pass to webview
+      //this.queryStackOverflowAPI(foundError.title);
+      foundError.sessionId = filePath; // Include session identifier
+      foundError.blobId = ourBlobId;
+      this._panel.webview.postMessage({
+        command: "ec",
+        error: foundError
+      });
+    }
+
+    let ecResponse = vscode_helpers.POST(
+      `http://${this.ecHost}/api/query/plaintext`,
+      JSON.stringify({ text: data }),
+      { "Content-Type": "application/json; charset=utf8" }
+    );
+
+    ecResponse.then(async response => {
+      const questions = JSON.parse((await response.readBody()).toString("utf8"));
+      const title = data.trim().split("\n")[0] || "";
+      const foundError: IFoundError = {
+        language: "",
+        rawText: data,
+        title,
+        googleQs: [title],
+        blobId: ourBlobId
+      };
+      this._panel.webview.postMessage({
+        command: "ec-results",
+        questions,
+        error: foundError
       });
     });
   }
