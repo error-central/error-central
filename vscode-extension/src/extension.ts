@@ -249,11 +249,10 @@ class ErrorCentralPanel {
       ]);
     } catch (error) {
       if (error.message.startsWith("Command failed: docker ps")) {
-        // Docker not running
+        return; // Docker is not running
       } else {
-        console.error(error)
+        throw (error) // Some other error
       }
-      return;
     }
 
     const dps_err = docker_ps.stdErr.toString();
