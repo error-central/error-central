@@ -241,14 +241,26 @@ class ErrorCentralPanel {
   }
 
   private async _checkForDockerInstances() {
-    const docker_ps = await vscode_helpers.execFile("docker", [
-      "ps",
-      "--format={{.Names}}, {{.CreatedAt}}"
-    ]);
+    let docker_ps = null
+    try {
+      docker_ps = await vscode_helpers.execFile("docker", [
+        "ps",
+        "--format={{.Names}}, {{.CreatedAt}}"
+      ]);
+    } catch (error) {
+      if (error.message.startsWith("Command failed: docker ps")) {
+        // Docker not running
+      } else {
+        console.error(error)
+      }
+      return;
+    }
+
     const dps_err = docker_ps.stdErr.toString();
     if (dps_err) {
       console.log(dps_err);
     }
+
     // convert buffer to list of machine names and iterate over them
     const ps_output = docker_ps.stdOut.toString().match(/[^\r\n]+/g) || [];
     ps_output.forEach(name_created => {
