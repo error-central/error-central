@@ -5,7 +5,10 @@
   const vscode = acquireVsCodeApi();
   const ecDiv = document.getElementById("ec-raw");
   const oldState = vscode.getState();
-  const errorId = message => `error-card-${message.error.blobId}`;
+
+  const errorId = (message) => {
+    `error-card-${message.error.blobId}`;
+  }
 
   const initErrorDiv = (message) => {
     const errorDivTemplate = document.getElementById("ec-error-template");
@@ -51,7 +54,7 @@
     const message = event.data; // The json data that the extension sends
     switch (message.command) {
       case "ec":
-        initErrorDiv();
+        initErrorDiv(message);
         break;
       case "ec-results":
         const questionDivTemplate = document.getElementById("stackex-question-template");
