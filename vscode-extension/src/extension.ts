@@ -177,7 +177,7 @@ class ErrorCentralPanel {
         const filePath = path.join(this.errlogPath, file);
         if (filePath in this._knownErrlogs === false) {
           const options = {
-            separator: "Ʋ", // Set to some uncommmon character as line separator in order to process whole blobs
+            separator: null,
             follow: true,
             flushAtEOF: true
           };
