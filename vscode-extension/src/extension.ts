@@ -166,6 +166,9 @@ class ErrorCentralPanel {
   }
 
   private _checkForErrlogs() {
+    /**
+     * Scan all the logs we're tracking and see if they contain new errors
+     */
     this._knownErrlogs;
     vscode_helpers.createDirectoryIfNeeded(this.errlogPath);
     fs.readdir(this.errlogPath, (err, files) => {
@@ -198,11 +201,14 @@ class ErrorCentralPanel {
   }
 
   private _handleBlob(data: any, filePath: string) {
-    // to do make these unique across multiple sessions
+    /**
+     * New data has been added to the file
+     */
+    if (data.length == 1) return; // Skip a single char; probably user typing in bash
+
+    // TODO: Make these unique across multiple sessions
     const ourBlobId = this.blobIdCounter;
     this.blobIdCounter++;
-    // New data has been added to the file
-    if (data.length == 1) return; // Skip a single char; probably user typing in bash
 
     let foundError = this.containsError(data);
     if (foundError) {
@@ -251,7 +257,7 @@ class ErrorCentralPanel {
       if (error.message.startsWith("Command failed: docker ps")) {
         return; // Docker is not running
       } else {
-        throw (error) // Some other error
+        throw (error); // Some other error
       }
     }
 
