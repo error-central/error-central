@@ -6,7 +6,7 @@ import * as os from "os";
 import * as vscode_helpers from "vscode-helpers";
 
 interface IFoundError {
-  language: string; // Language error found in
+  language?: string; // Language error found in
   rawText: string; // Entire blob of error message
   title: string; // Best title to show
   blobId?: number; // Id of the individual blob containing error
@@ -57,6 +57,8 @@ class ErrorCentralPanel {
   private _knownDocker: Map<string, string> = new Map();
   private ecHost: string = "localhost";
 
+  private _latsetDiagnostics: Map<string, Date> = new Map(); // Hacky way of recording Problems from problempane
+
   public static createOrShow(extensionPath: string) {
     const column = vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
@@ -102,7 +104,7 @@ class ErrorCentralPanel {
     this._panel.webview.html = this._getHtmlForWebview();
     setInterval(() => this._checkForErrlogs(), 800);
 
-    // todo: when developing locally we need to not create an infinite loop by tailing
+    // TODO: when developing locally we need to not create an infinite loop by tailing
     // our server's stdout
     setInterval(() => this._checkForDockerInstances(), 800);
 
@@ -122,6 +124,16 @@ class ErrorCentralPanel {
       null,
       this._disposables
     );
+
+    // Get notified of new problems
+    console.log("onDidChangeDiagnostics");
+    vscode.languages.onDidChangeDiagnostics((e) => {
+      console.log(e);
+      //console.log(vscode.languages.getDiagnostics());
+      this._exportDiagnostics();
+      console.log(vscode.languages.getDiagnostics(e.uris[0]));
+    });
+
   }
 
   public dispose() {
@@ -282,7 +294,59 @@ class ErrorCentralPanel {
     });
   }
 
-  // Return error info if one found, else null
+  /* TESTING */
+  // Handle a change in diagnostics aka a change in Problems
+  private _exportDiagnostics() {
+    let currentDiagnostics: Map<string, Date> = new Map();
+
+    console.log('----------------------------------------');
+    let tuples = vscode.languages.getDiagnostics();
+    for (var [thisUri, thisDiagnostics] of tuples) {
+      for (let thisDiagnostic of thisDiagnostics) {
+
+        // A hacky way to identify this Problem by uri+code, so we'll
+        // miss cases where same problem occurs multiple times in same file.
+        const diagnosticId = `${thisUri.path}-${thisDiagnostic.code}`;
+        console.log("🔵diagnosticId:", diagnosticId)
+
+        currentDiagnostics.set(diagnosticId, new Date());
+
+        if (this._latsetDiagnostics.get(diagnosticId)) {
+          // We've already seen this Problem
+          // console.log('🌕 Dupe:', diagnosticId)
+        }
+        else {
+          // Remember that we saw this Problem so we don't double-send to our UI
+          console.log('🔵We got a thisDiagnostic !️')
+          console.log('thisDiagnostic.message', thisDiagnostic.message);
+          console.log('thisUri.path', thisUri.path);
+          console.log(thisUri);
+          console.log(thisDiagnostic);
+          console.log('--------');
+          // myDiagnosticOutput.startLine = thisDiagnostic.range.start.line;
+          // myDiagnosticOutput.startCharacter = thisDiagnostic.range.start.character;
+          // myDiagnosticOutput.endLine = thisDiagnostic.range.end.line;
+          // myDiagnosticOutput.endCharacter = thisDiagnostic.range.end.character;
+          // diagnosticOutputs.push(myDiagnosticOutput);
+
+          const error: IFoundError = {
+            language: thisDiagnostic.source,
+            rawText: thisDiagnostic.message,
+            title: thisDiagnostic.message,
+            googleQs: [thisDiagnostic.message],
+            sessionId: thisUri.path
+          };
+          this._panel.webview.postMessage({
+            command: "ec",
+            error: error
+          });
+        }
+      }
+    }
+    this._latsetDiagnostics = currentDiagnostics;
+  }
+
+  // Return error info if one found in passed string, else null
   public containsError(data: string): IFoundError | null {
     // Patterns for error messages
     const errorDetectors = [findPythonError, findNodeError, findBashError];
