@@ -4,6 +4,7 @@ import * as tail from "tail";
 import * as fs from "fs";
 import * as os from "os";
 import * as vscode_helpers from "vscode-helpers";
+import Axios, * as axios from 'axios';
 
 interface IFoundError {
   language?: string; // Language error found in
@@ -47,7 +48,7 @@ class ErrorCentralPanel {
   public static readonly viewType = "errorCentral";
   public errlogPath: string = path.join(os.homedir(), ".ec", "sessions"); // Directory where we'll tail logs files
   public SOQueryTemplate: string =
-    "https://api.stackexchange.com/2.2/search/advanced?order=desc&sort=relevance&accepted=True&site=stackoverflow&q=";
+    'https://api.stackexchange.com/2.2/search/advanced?order=desc&sort=relevance&answers=1&filter=withbody&site=stackoverflow&q=';
 
   private blobIdCounter = 0;
   private readonly _panel: vscode.WebviewPanel;
@@ -192,7 +193,7 @@ class ErrorCentralPanel {
         const filePath = path.join(this.errlogPath, file);
         if (filePath in this._knownErrlogs === false) {
           const options = {
-            separator: null,
+            separator: undefined,
             follow: true,
             flushAtEOF: true
           };
@@ -225,7 +226,7 @@ class ErrorCentralPanel {
     let foundError = this.containsError(data);
     if (foundError) {
       // Pass to webview
-      //this.queryStackOverflowAPI(foundError.title);
+      this.queryStackOverflowAPI(foundError.title.split(' ').join(' OR '));
       foundError.sessionId = filePath; // Include session identifier
       foundError.blobId = ourBlobId;
       this._panel.webview.postMessage({
@@ -340,6 +341,7 @@ class ErrorCentralPanel {
             command: "ec",
             error: error
           });
+          this.queryStackOverflowAPI(error.title.split(' ').join(' OR '));
         }
       }
     }
@@ -363,13 +365,18 @@ class ErrorCentralPanel {
 
   public queryStackOverflowAPI(q: string) {
     console.log("Querying StackOverflow with: " + q);
-    let soResult = vscode_helpers.GET(
+    //    questions = questions.map((question: any) => ({ title: question.title, link: question.link, id: question.question_id, body: question.body, owner: question.owner }));
+    let soResult = Axios.get(
       this.SOQueryTemplate + encodeURIComponent(q)
     );
     soResult.then(response => {
-      console.log(response);
+      console.log("We got results from stackex!");
+      const { items, quota_remaining } = response.data;
+      this._panel.webview.postMessage({ command: "questions", questions: items });
+      console.log(items);
     });
     soResult.catch(err => {
+      this._panel.webview.postMessage({ command: "error", message: "We have trouble getting results from the StackOverflow API." });
       console.log(err);
     });
   }
