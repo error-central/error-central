@@ -195,5 +195,21 @@ class ErrorCentralMonitor {
 }
 
 
+const pidFile = path.join(os.homedir(), ".ec", "ec-monitor-pid.txt");
+if (fs.existsSync(pidFile)) {
+  const ecMonitorPid = parseInt(fs.readFileSync(pidFile, "utf8"));
+  try {
+    process.kill(ecMonitorPid, 0);
+    // ec-monitor already running, so we exit
+    console.log(`ec-monitor already running with pid ${ecMonitorPid}. Exiting.`);
+    process.exit()
+  }
+  catch (err) {
+    // Not running: Therefore we continue running.
+  }
+}
+// Record our pid as *the* running ec-monitor
+fs.writeFileSync(pidFile, process.pid)
+
 let x = new ErrorCentralMonitor()
-console.log("Running!");
+console.log(`ec-monitor running with with pid ${process.pid}`);
