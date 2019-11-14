@@ -212,4 +212,4 @@ if (fs.existsSync(pidFile)) {
 fs.writeFileSync(pidFile, process.pid)
 
 let x = new ErrorCentralMonitor()
-console.log(`ec-monitor running with with pid ${process.pid}`);
+console.log(`💡 ec-monitor: running with with pid ${process.pid}`);
