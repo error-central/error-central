@@ -45,9 +45,7 @@ class ErrorCentralMonitor {
       foundError.sessionId = filePath;
       foundError.blobId = ourBlobId;
 
-      //
-      // NOTE: DO SOMETHING WITH THE ERROR
-      //
+      // Post to cloud
       axios.post("http://wanderingstan.com/ec/ec-monitor.php", {
         "sessionId": foundError.sessionId,
         "userName": os.userInfo().username,
