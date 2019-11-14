@@ -10,7 +10,7 @@ interface IFoundError {
   language?: string; // Language error was found in
   rawText: string; // Entire blob of error message
   title: string; // Best title to show
-  googleQs?: Array<string>;
+  googleQs?: Array<string>; // HACK: Queries to pass to google
 }
 
 class ErrorCentralMonitor {
@@ -48,13 +48,13 @@ class ErrorCentralMonitor {
       //
       // NOTE: DO SOMETHING WITH THE ERROR
       //
-      axios.post('http://wanderingstan.com/ec/ec-monitor.php', {
-        'sessionId': foundError.sessionId,
-        'userName': 'xxx',
-        'blobId': foundError.blobId,
-        'language': foundError.language,
-        'title': foundError.title,
-        'rawText': foundError.rawText,
+      axios.post("http://wanderingstan.com/ec/ec-monitor.php", {
+        "sessionId": foundError.sessionId,
+        "userName": os.userInfo().username,
+        "blobId": foundError.blobId,
+        "language": foundError.language,
+        "title": foundError.title,
+        "rawText": foundError.rawText,
       })
         .then(function (response) {
           console.log(response);
@@ -172,7 +172,7 @@ class ErrorCentralMonitor {
             this._filesBeingTailed[filePath] = t;
             console.log(`Now tailing "${filePath}"`);
           } catch (error) {
-            console.error('tail error:' + error);
+            console.error(`tail error: ${error}`);
           }
         }
       });
