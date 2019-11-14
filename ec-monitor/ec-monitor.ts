@@ -5,11 +5,11 @@ import * as os from "os";
 import axios from "axios";
 
 interface IFoundError {
+  sessionId?: string; // Optional identifier for terminal/session
+  blobId?: number; // Id of the individual blob containing error
   language?: string; // Language error was found in
   rawText: string; // Entire blob of error message
   title: string; // Best title to show
-  blobId?: number; // Id of the individual blob containing error
-  sessionId?: string; // Optional identifier for terminal/session
   googleQs?: Array<string>;
 }
 
@@ -48,9 +48,13 @@ class ErrorCentralMonitor {
       //
       // NOTE: DO SOMETHING WITH THE ERROR
       //
-      axios.post('/user', {
-        firstName: 'Fred',
-        lastName: 'Flintstone'
+      axios.post('http://wanderingstan.com/ec/ec-monitor.php', {
+        'sessionId': foundError.sessionId,
+        'userName': 'xxx',
+        'blobId': foundError.blobId,
+        'language': foundError.language,
+        'title': foundError.title,
+        'rawText': foundError.rawText,
       })
         .then(function (response) {
           console.log(response);
@@ -58,8 +62,6 @@ class ErrorCentralMonitor {
         .catch(function (error) {
           console.log(error);
         });
-
-
 
     }
   }
