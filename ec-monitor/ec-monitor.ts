@@ -70,7 +70,7 @@ class ErrorCentralMonitor {
    */
   public extractError(data: string): IFoundError | null {
     // Patterns for error messages
-    const errorDetectors = [this.findPythonError, this.findNodeError, this.findBashError];
+    const errorDetectors = [this.findPythonError, this.findNodeError, this.findBashError, this.findGitError];
     for (const detector of errorDetectors) {
       const foundError = detector(data);
       if (foundError) {
@@ -97,6 +97,21 @@ class ErrorCentralMonitor {
 
     const result: IFoundError = {
       language: "node",
+      rawText: data,
+      title,
+      googleQs: [title]
+    };
+    return result;
+  }
+
+  public findGitError(data: string): IFoundError | null {
+    const regex = /^remote: */gms;
+    if (!regex.test(data)) {
+      return null; // No error found in data, we're done!
+    }
+    const title = data.trim().split("\n")[0] || "";
+    const result: IFoundError = {
+      language: "git",
       rawText: data,
       title,
       googleQs: [title]
@@ -170,7 +185,7 @@ class ErrorCentralMonitor {
             this._filesBeingTailed[filePath] = t;
             console.log(`Now tailing "${filePath}"`);
           } catch (error) {
-            console.error(`tail error: ${error}`);
+            console.error("tail error:", error);
           }
         }
       });
