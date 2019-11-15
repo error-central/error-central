@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/error-central/error-central.git"
   },
-  "main": "ec-monitor.js",
+  "main": "out/ec-monitor.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

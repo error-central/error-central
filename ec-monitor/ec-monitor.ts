@@ -28,8 +28,11 @@ class ErrorCentralMonitor {
   private _filesBeingTailed: { [path: string]: tail.Tail } = {};
   private _tailFilePollIntervalMs = 2000;
   private _blobCounter = 0;
+  private _errorCallBack: Function;
 
-  public constructor() {
+  public constructor(errorCallBack: Function) {
+    this._errorCallBack = errorCallBack;
+
     // Check for newly created terminals every so often
     setInterval(() => this.checkForErrlogs(), this._tailFilePollIntervalMs);
   }
@@ -98,6 +101,11 @@ class ErrorCentralMonitor {
       foundError.sessionId = filePath;
       foundError.blobId = ourBlobId;
       foundError.date = new Date();
+
+      // Post to callback
+      if (this._errorCallBack) {
+        this._errorCallBack(foundError);
+      }
 
       // Post to cloud
       axios.post("http://wanderingstan.com/ec/ec-monitor.php", {
@@ -257,7 +265,7 @@ if (require.main === module) {
   // Record our pid as *the* running ec-monitor
   fs.writeFileSync(pidFile, process.pid);
 
-  let x = new ErrorCentralMonitor()
+  let x = new ErrorCentralMonitor(null)
   console.log(`💡 ec-monitor: running with with pid ${process.pid}`);
 }
 

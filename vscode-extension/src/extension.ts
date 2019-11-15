@@ -4,6 +4,9 @@ import * as tail from "tail";
 import * as fs from "fs";
 import * as os from "os";
 import * as vscode_helpers from "vscode-helpers";
+// import { ErrorCentralMonitor } from "ec-monitor";
+// var msg = require('ec-monitor');
+var ErrorCentralMonitor = require('ec-monitor');
 
 interface IFoundError {
   language?: string; // Language error found in
@@ -15,6 +18,16 @@ interface IFoundError {
 }
 
 export function activate(context: vscode.ExtensionContext) {
+
+  // const gitExtension = vscode.extensions.getExtension<GitExtension>('vscode.git')!.exports;
+  // const api = gitExtension.getAPI(1);
+  // console.log(msg);
+
+
+  // const rootPath = vscode.workspace.rootPath;
+  // const repository = api.repositories.filter(r => isDescendant(r.rootUri.fsPath, rootPath))[0];
+
+
   context.subscriptions.push(
     vscode.commands.registerCommand("errorCentral.start", () => {
       ErrorCentralPanel.createOrShow(context.extensionPath);
@@ -49,17 +62,16 @@ class ErrorCentralPanel {
   public SOQueryTemplate: string =
     "https://api.stackexchange.com/2.2/search/advanced?order=desc&sort=relevance&accepted=True&site=stackoverflow&q=";
 
-  private blobIdCounter = 0;
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionPath: string;
   private _disposables: vscode.Disposable[] = [];
-  private _knownErrlogs: { [path: string]: tail.Tail } = {}; // Known file paths that we're tailing
   private _knownDocker: Map<string, string> = new Map();
   private ecHost: string = "localhost";
 
   private _latsetDiagnostics: Map<string, Date> = new Map(); // Hacky way of recording Problems from problempane
 
   public static createOrShow(extensionPath: string) {
+
     const column = vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
       : undefined;
@@ -102,7 +114,8 @@ class ErrorCentralPanel {
     this._extensionPath = extensionPath;
 
     this._panel.webview.html = this._getHtmlForWebview();
-    setInterval(() => this._checkForErrlogs(), 800);
+
+    let ecm = new ErrorCentralMonitor(this._handleError);
 
     // TODO: when developing locally we need to not create an infinite loop by tailing
     // our server's stdout
@@ -177,89 +190,40 @@ class ErrorCentralPanel {
     return filledHtml;
   }
 
-  private _checkForErrlogs() {
-    /**
-     * Scan all the logs we're tracking and see if they contain new errors
-     */
-    this._knownErrlogs;
-    vscode_helpers.createDirectoryIfNeeded(this.errlogPath);
-    fs.readdir(this.errlogPath, (err, files) => {
-      if (err) {
-        return console.error(`Unable to scan ec directory: ${err}`);
-      }
+  public _handleError = (foundError: IFoundError) => {
 
-      files.forEach(file => {
-        const filePath = path.join(this.errlogPath, file);
-        if (filePath in this._knownErrlogs === false) {
-          const options = {
-            separator: null,
-            follow: true,
-            flushAtEOF: true
-          };
-          try {
-            // TODO: We should pass any existing filedata to webview at this point,
-            //       i.e. data that was there before we started tailing.
-            let t = new tail.Tail(filePath, options);
-            t.on("line", data => this._handleBlob(data, filePath));
-
-            this._knownErrlogs[filePath] = t;
-            console.log(`Now tailing ${filePath}`);
-          } catch (error) {
-            console.error(error);
-          }
-        }
-      });
+    // Pass to webview
+    this._panel.webview.postMessage({
+      command: "ec",
+      error: foundError
     });
-  }
 
-  private _handleBlob(data: any, filePath: string) {
-    /**
-     * New data has been added to the file
-     */
-    if (data.length == 1) return; // Skip a single char; probably user typing in bash
+    // let ecResponse = vscode_helpers.POST(
+    //   `http://${this.ecHost}/api/query/plaintext`,
+    //   JSON.stringify({ text: data }),
+    //   { "Content-Type": "application/json; charset=utf8" }
+    // );
 
-    // TODO: Make these unique across multiple sessions
-    const ourBlobId = this.blobIdCounter;
-    this.blobIdCounter++;
-
-    let foundError = this.containsError(data);
-    if (foundError) {
-      // Pass to webview
-      //this.queryStackOverflowAPI(foundError.title);
-      foundError.sessionId = filePath; // Include session identifier
-      foundError.blobId = ourBlobId;
-      this._panel.webview.postMessage({
-        command: "ec",
-        error: foundError
-      });
-    }
-
-    let ecResponse = vscode_helpers.POST(
-      `http://${this.ecHost}/api/query/plaintext`,
-      JSON.stringify({ text: data }),
-      { "Content-Type": "application/json; charset=utf8" }
-    );
-
-    ecResponse.then(async response => {
-      const questions = JSON.parse((await response.readBody()).toString("utf8"));
-      const title = data.trim().split("\n")[0] || "";
-      const foundError: IFoundError = {
-        language: "",
-        rawText: data,
-        title,
-        googleQs: [title],
-        blobId: ourBlobId
-      };
-      this._panel.webview.postMessage({
-        command: "ec-results",
-        questions,
-        error: foundError
-      });
-    });
+    // ecResponse.then(async response => {
+    //   const questions = JSON.parse((await response.readBody()).toString("utf8"));
+    //   const title = data.trim().split("\n")[0] || "";
+    //   const foundError: IFoundError = {
+    //     language: "",
+    //     rawText: data,
+    //     title,
+    //     googleQs: [title],
+    //     blobId: ourBlobId
+    //   };
+    //   this._panel.webview.postMessage({
+    //     command: "ec-results",
+    //     questions,
+    //     error: foundError
+    //   });
+    // });
   }
 
   private async _checkForDockerInstances() {
-    let docker_ps = null
+    let docker_ps = null;
     try {
       docker_ps = await vscode_helpers.execFile("docker", [
         "ps",
@@ -307,7 +271,7 @@ class ErrorCentralPanel {
         // A hacky way to identify this Problem by uri+code, so we'll
         // miss cases where same problem occurs multiple times in same file.
         const diagnosticId = `${thisUri.path}-${thisDiagnostic.code}`;
-        console.log("🔵diagnosticId:", diagnosticId)
+        console.log("🔵diagnosticId:", diagnosticId);
 
         currentDiagnostics.set(diagnosticId, new Date());
 
@@ -317,7 +281,7 @@ class ErrorCentralPanel {
         }
         else {
           // Remember that we saw this Problem so we don't double-send to our UI
-          console.log('🔵We got a thisDiagnostic !️')
+          console.log('🔵We got a thisDiagnostic !️');
           console.log('thisDiagnostic.message', thisDiagnostic.message);
           console.log('thisUri.path', thisUri.path);
           console.log(thisUri);
@@ -469,3 +433,4 @@ function getNonce() {
   }
   return text;
 }
+
