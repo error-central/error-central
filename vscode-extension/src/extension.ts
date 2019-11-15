@@ -1,20 +1,22 @@
 import * as path from "path";
 import * as vscode from "vscode";
-import * as tail from "tail";
 import * as fs from "fs";
 import * as os from "os";
 import * as vscode_helpers from "vscode-helpers";
-// import { ErrorCentralMonitor } from "ec-monitor";
-// var msg = require('ec-monitor');
-var ErrorCentralMonitor = require('ec-monitor');
+var ErrorCentralMonitor = require("ec-monitor");
 
+// TODO: How to import this from ec-montior module?
+/**
+ * Interface/spec for recording details of an error
+ */
 interface IFoundError {
-  language?: string; // Language error found in
+  sessionId?: string; // Optional identifier for terminal/session
+  blobId?: number; // Id of the individual blob containing error
+  date?: Date; // When this error was detected
+  language?: string; // Language error was found in
   rawText: string; // Entire blob of error message
   title: string; // Best title to show
-  blobId?: number; // Id of the individual blob containing error
-  sessionId?: string; // Optional identifier for terminal/session
-  googleQs?: Array<string>;
+  googleQs?: Array<string>; // HACK: Queries to pass to google
 }
 
 export function activate(context: vscode.ExtensionContext) {
