@@ -326,29 +326,6 @@ class ErrorCentralPanel {
     });
   }
 
-  public send2Server(data: string) {
-    const url = "http://" + this.ecHost + "/api/query/plaintext";
-    console.log("incoming:");
-    console.log(data);
-
-    let ecServerResult = vscode_helpers.POST(
-      url,
-      JSON.stringify({ text: data }),
-      {
-        "Content-Type": "application/json; charset=utf8"
-      }
-    );
-
-    ecServerResult.then(response => {
-      console.log("there has been a response");
-      console.log(response);
-    });
-
-    ecServerResult.catch(err => {
-      console.log("we had an error");
-      console.log(err);
-    });
-  }
 }
 
 function getNonce() {
