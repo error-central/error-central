@@ -1,0 +1,14 @@
+{
+  "folders": [
+    {
+      "path": "vscode-extension"
+    },
+    {
+      "path": "ec-monitor"
+    },
+    {
+      "path": "ec-bash"
+    }
+  ],
+  "settings": {}
+}
