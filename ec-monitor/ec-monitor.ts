@@ -248,16 +248,22 @@ if (require.main === module) {
       process.kill(ecMonitorPid, 0);
       // ec-monitor already running, so we exit
       console.log(`ec-monitor already running with pid ${ecMonitorPid}. Exiting.`);
-      process.exit()
+      process.exit();
     }
     catch (err) {
       // File pid no longer running. Therefore we allow this process to continue.
     }
   }
   // Record our pid as *the* running ec-monitor
-  fs.writeFileSync(pidFile, process.pid)
+  fs.writeFileSync(pidFile, process.pid);
 
   let x = new ErrorCentralMonitor()
   console.log(`💡 ec-monitor: running with with pid ${process.pid}`);
 }
 
+// export default ErrorCentralMonitor;
+// module.exports = {
+//   ErrorCentralMonitor
+// };
+// module.exports = 'Hello world';
+module.exports = ErrorCentralMonitor;
