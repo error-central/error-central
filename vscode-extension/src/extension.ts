@@ -312,20 +312,6 @@ class ErrorCentralPanel {
     this._latsetDiagnostics = currentDiagnostics;
   }
 
-  // Return error info if one found in passed string, else null
-  public containsError(data: string): IFoundError | null {
-    // Patterns for error messages
-    const errorDetectors = [findPythonError, findNodeError, findBashError];
-    for (const detector of errorDetectors) {
-      const foundError = detector(data);
-      if (foundError) {
-        console.info(`🔵 foundError → `, foundError);
-        return foundError;
-      }
-    }
-    // No errors found
-    return null;
-  }
 
   public queryStackOverflowAPI(q: string) {
     console.log("Querying StackOverflow with: " + q);
@@ -363,67 +349,6 @@ class ErrorCentralPanel {
       console.log(err);
     });
   }
-}
-
-function findNodeError(data: string): IFoundError | null {
-  const regex = /Thrown:.*\n[a-zA-Z0-9]*:.*/gms;
-  if (!regex.test(data)) {
-    return null; // No error found in data, we're done!
-  }
-
-  // Last line is title
-  const title =
-    data
-      .trim()
-      .split("\n")
-      .pop() || "";
-
-  const result: IFoundError = {
-    language: "node",
-    rawText: data,
-    title,
-    googleQs: [title]
-  };
-  return result;
-}
-
-function findBashError(data: string): IFoundError | null {
-  const regex = /^bash: */gms;
-  if (!regex.test(data)) {
-    return null; // No error found in data, we're done!
-  }
-  const title = data.trim().split("\n")[0] || "";
-  const result: IFoundError = {
-    language: "bash",
-    rawText: data,
-    title,
-    googleQs: [title]
-  };
-  return result;
-}
-
-function findPythonError(data: string): IFoundError | null {
-  const regex = /File "[^"]*",.*\n[a-zA-Z0-9]*:.*/gms;
-  if (!regex.test(data)) {
-    return null; // No error found in data, we're done!
-  }
-
-  // Last line is title
-  const title =
-    data
-      .trim()
-      .split("\n")
-      .pop() || "";
-  // Brute force take out things that look like variables in error output
-  const strippedQ = title.replace(/'.*'/, "");
-
-  const result: IFoundError = {
-    language: "python",
-    rawText: data,
-    title,
-    googleQs: [title, strippedQ]
-  };
-  return result;
 }
 
 function getNonce() {
