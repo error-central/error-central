@@ -8,6 +8,9 @@
     },
     {
       "path": "ec-bash"
+    },
+    {
+      "path": "."
     }
   ],
   "settings": {}
