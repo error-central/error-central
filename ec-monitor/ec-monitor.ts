@@ -137,6 +137,10 @@ class ErrorCentralMonitor {
     return null;
   }
 
+  //
+  // ** Paterns for errors **
+  //
+
   public findNodeError(data: string): IFoundError | null {
     const regex = /Thrown:.*\n[a-zA-Z0-9]*:.*/gms;
     if (!regex.test(data)) {
@@ -173,6 +177,23 @@ class ErrorCentralMonitor {
     };
     return result;
   }
+
+  public findNpmError(data: string): IFoundError | null {
+    // TODO: we probably need to strip control codes, as `ERR!` is colorized.
+    const regex = /^npm ERR!*/gms;
+    if (!regex.test(data)) {
+      return null; // No error found in data, we're done!
+    }
+    const title = data.trim().split("\n")[0] || "";
+    const result: IFoundError = {
+      language: "npm",
+      rawText: data,
+      title,
+      googleQs: [title]
+    };
+    return result;
+  }
+
 
   public findBashError(data: string): IFoundError | null {
     const regex = /^-?bash: */gms;
