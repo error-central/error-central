@@ -4,6 +4,9 @@ import * as tail from "tail";
 import * as os from "os";
 import axios from "axios";
 
+/**
+ * Interface/spec for recording details of an error
+ */
 interface IFoundError {
   sessionId?: string; // Optional identifier for terminal/session
   blobId?: number; // Id of the individual blob containing error
@@ -13,6 +16,9 @@ interface IFoundError {
   googleQs?: Array<string>; // HACK: Queries to pass to google
 }
 
+/**
+ * Class for monitoring the log files written by our tee hack.
+ */
 class ErrorCentralMonitor {
 
   // Directory where ec tail logs files all written
@@ -23,7 +29,42 @@ class ErrorCentralMonitor {
   private _blobCounter = 0;
 
   public constructor() {
+    // Check for newly created terminals every so often
     setInterval(() => this.checkForErrlogs(), this._tailFilePollIntervalMs);
+  }
+
+  /**
+   * Scan all the logs we're tracking and see if they contain new errors
+   * TODO: Delete or ignore old logs
+   */
+  public checkForErrlogs() {
+    fs.readdir(this._errlogPath, (err, files) => {
+      if (err) {
+        return console.error(`Unable to scan ec directory: ${err}`);
+      }
+      files.forEach(file => {
+        const filePath = path.join(this._errlogPath, file);
+        if (filePath in this._filesBeingTailed === false) {
+          const options = {
+            separator: null,
+            follow: true,
+            flushAtEOF: true,
+            useWatchFile: true,
+          };
+
+          try {
+            // TODO: We should pass any existing filedata to webview at this point,
+            //       i.e. data that was there before we started tailing.
+            let t = new tail.Tail(filePath, options);
+            t.on("line", data => this._handleBlob(data, filePath));
+            this._filesBeingTailed[filePath] = t;
+            console.log(`Now tailing "${filePath}"`);
+          } catch (error) {
+            console.error("tail error:", error);
+          }
+        }
+      });
+    });
   }
 
   /**
@@ -157,59 +198,31 @@ class ErrorCentralMonitor {
     };
     return result;
   }
-
-
-  /**
-   * Scan all the logs we're tracking and see if they contain new errors
-   */
-  public checkForErrlogs() {
-    fs.readdir(this._errlogPath, (err, files) => {
-      if (err) {
-        return console.error(`Unable to scan ec directory: ${err}`);
-      }
-      files.forEach(file => {
-        const filePath = path.join(this._errlogPath, file);
-        if (filePath in this._filesBeingTailed === false) {
-          const options = {
-            separator: null,
-            follow: true,
-            flushAtEOF: true,
-            useWatchFile: true,
-          };
-
-          try {
-            // TODO: We should pass any existing filedata to webview at this point,
-            //       i.e. data that was there before we started tailing.
-            let t = new tail.Tail(filePath, options);
-            t.on("line", data => this._handleBlob(data, filePath));
-            this._filesBeingTailed[filePath] = t;
-            console.log(`Now tailing "${filePath}"`);
-          } catch (error) {
-            console.error("tail error:", error);
-          }
-        }
-      });
-    });
-  }
-
 }
 
+if (require.main === module) {
+  // This module was run directly from the command line as in node xxx.js
 
-const pidFile = path.join(os.homedir(), ".ec", "ec-monitor-pid.txt");
-if (fs.existsSync(pidFile)) {
-  const ecMonitorPid = parseInt(fs.readFileSync(pidFile, "utf8"));
-  try {
-    process.kill(ecMonitorPid, 0);
-    // ec-monitor already running, so we exit
-    console.log(`ec-monitor already running with pid ${ecMonitorPid}. Exiting.`);
-    process.exit()
+  // Test if ec-monitor is already running, by looking in our magic file.
+  // File is expected to contain the pid of last run ec-monitor process.
+  const pidFile = path.join(os.homedir(), ".ec", "ec-monitor-pid.txt");
+  if (fs.existsSync(pidFile)) {
+    const ecMonitorPid = parseInt(fs.readFileSync(pidFile, "utf8"));
+    try {
+      // Passing '0' means it will throw an error if process doesn't exist.
+      process.kill(ecMonitorPid, 0);
+      // ec-monitor already running, so we exit
+      console.log(`ec-monitor already running with pid ${ecMonitorPid}. Exiting.`);
+      process.exit()
+    }
+    catch (err) {
+      // File pid no longer running. Therefore we allow this process to continue.
+    }
   }
-  catch (err) {
-    // Not running: Therefore we continue running.
-  }
+  // Record our pid as *the* running ec-monitor
+  fs.writeFileSync(pidFile, process.pid)
+
+  let x = new ErrorCentralMonitor()
+  console.log(`💡 ec-monitor: running with with pid ${process.pid}`);
 }
-// Record our pid as *the* running ec-monitor
-fs.writeFileSync(pidFile, process.pid)
 
-let x = new ErrorCentralMonitor()
-console.log(`💡 ec-monitor: running with with pid ${process.pid}`);
