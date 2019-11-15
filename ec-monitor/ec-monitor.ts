@@ -45,7 +45,20 @@ class ErrorCentralMonitor {
       }
       files.forEach(file => {
         const filePath = path.join(this._errlogPath, file);
-        if (filePath in this._filesBeingTailed === false) {
+        const alreadyFollowed = (filePath in this._filesBeingTailed);
+        let processExists;
+        try {
+          // Passing '0' means it will throw an error if process doesn't exist.
+          process.kill(parseInt(file), 0);
+          processExists = true;
+        }
+        catch (err) {
+          console.log(`Deleting dead session ${filePath}`);
+          fs.unlink(filePath, e => console.log);
+          processExists = false;
+        }
+
+        if (!alreadyFollowed && processExists) {
           const options = {
             separator: null,
             follow: true,
@@ -54,8 +67,6 @@ class ErrorCentralMonitor {
           };
 
           try {
-            // TODO: We should pass any existing filedata to webview at this point,
-            //       i.e. data that was there before we started tailing.
             let t = new tail.Tail(filePath, options);
             t.on("line", data => this._handleBlob(data, filePath));
             this._filesBeingTailed[filePath] = t;
