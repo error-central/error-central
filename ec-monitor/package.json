@@ -1,7 +1,11 @@
 {
   "name": "ec-monitor",
   "version": "0.0.1",
-  "description": "Montitor logs from ec bash script",
+  "description": "Montitor logs from ec bash script and send to cloud.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/error-central/error-central.git"
+  },
   "main": "ec-monitor.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
