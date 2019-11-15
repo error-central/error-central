@@ -19,19 +19,20 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$a = "user";
-$stmt = $conn->prepare("INSERT INTO errors (sessionId, userName, blobId, language, title, rawText) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt = $conn->prepare("INSERT INTO errors (sessionId, userName, blobId, date, language, title, rawText) VALUES (?, ?, ?, ?, ?, ?, ?)");
 $stmt->bind_param(
-    'dsdsss',
+    'dsdssss',
     $_POST['sessionId'],
-    $a,
+    $_POST['userName'],
     $_POST['blobId'],
+    $_POST['date'],
     $_POST['language'],
     $_POST['title'],
     $_POST['rawText']
 );
 if ($stmt->execute() === TRUE) {
     echo "{success: 1}";
+    print_r($_POST);
 } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
 }

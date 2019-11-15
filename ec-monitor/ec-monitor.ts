@@ -10,6 +10,7 @@ import axios from "axios";
 interface IFoundError {
   sessionId?: string; // Optional identifier for terminal/session
   blobId?: number; // Id of the individual blob containing error
+  date?: Date; // When this error was detected
   language?: string; // Language error was found in
   rawText: string; // Entire blob of error message
   title: string; // Best title to show
@@ -85,12 +86,14 @@ class ErrorCentralMonitor {
       // Pass to webview
       foundError.sessionId = filePath;
       foundError.blobId = ourBlobId;
+      foundError.date = new Date();
 
       // Post to cloud
       axios.post("http://wanderingstan.com/ec/ec-monitor.php", {
         "sessionId": foundError.sessionId,
         "userName": os.userInfo().username,
         "blobId": foundError.blobId,
+        "date": foundError.date.toJSON(),
         "language": foundError.language,
         "title": foundError.title,
         "rawText": foundError.rawText,
@@ -161,7 +164,7 @@ class ErrorCentralMonitor {
   }
 
   public findBashError(data: string): IFoundError | null {
-    const regex = /^bash: */gms;
+    const regex = /^-?bash: */gms;
     if (!regex.test(data)) {
       return null; // No error found in data, we're done!
     }
