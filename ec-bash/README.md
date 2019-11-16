@@ -22,7 +22,7 @@ source ec_session.sh
 echo 'source /Users/stan/ec_session.sh' >>~/.bashrc
 ```
 
-or for MacOS:
+    or for MacOS:
 
 ```bash
 echo 'source /Users/stan/ec_session.sh' >>~/.bash_profile
