@@ -64,7 +64,7 @@ class ErrorCentralPanel {
   // Directory where we'll tail logs files TODO: Move all of this to ec-monitor
   public errlogPath: string = path.join(os.homedir(), ".ec", "sessions");
   public SOQueryTemplate: string =
-    'https://api.stackexchange.com/2.2/search/advanced?order=desc&sort=relevance&answers=1&filter=withbody&site=stackoverflow&q=';
+    "https://api.stackexchange.com/2.2/search/advanced?order=desc&sort=relevance&answers=1&filter=withbody&site=stackoverflow&q=";
 
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionPath: string;
@@ -209,7 +209,7 @@ class ErrorCentralPanel {
     });
 
     // Search Stack Overflow NOTE: Experimental
-    this.queryStackOverflowAPI(foundError.title.split(' ').join(' OR '));
+    this.queryStackOverflowAPI(foundError.title.split(" ").join(" OR "));
 
     // let ecResponse = vscode_helpers.POST(
     //   `http://${this.ecHost}/api/query/plaintext`,
@@ -283,7 +283,7 @@ class ErrorCentralPanel {
   private _exportDiagnostics() {
     let currentDiagnostics: Map<string, Date> = new Map();
 
-    console.log('----------------------------------------');
+    console.log("----------------------------------------");
     let tuples = vscode.languages.getDiagnostics();
     for (var [thisUri, thisDiagnostics] of tuples) {
       for (let thisDiagnostic of thisDiagnostics) {
@@ -301,12 +301,12 @@ class ErrorCentralPanel {
         }
         else {
           // Remember that we saw this Problem so we don't double-send to our UI
-          console.log('🔵We got a thisDiagnostic !️');
-          console.log('thisDiagnostic.message', thisDiagnostic.message);
-          console.log('thisUri.path', thisUri.path);
+          console.log("🔵We got a thisDiagnostic !️");
+          console.log("thisDiagnostic.message", thisDiagnostic.message);
+          console.log("thisUri.path", thisUri.path);
           console.log(thisUri);
           console.log(thisDiagnostic);
-          console.log('--------');
+          console.log("--------");
           // myDiagnosticOutput.startLine = thisDiagnostic.range.start.line;
           // myDiagnosticOutput.startCharacter = thisDiagnostic.range.start.character;
           // myDiagnosticOutput.endLine = thisDiagnostic.range.end.line;
@@ -324,7 +324,7 @@ class ErrorCentralPanel {
             command: "ec",
             error: error
           });
-          this.queryStackOverflowAPI(error.title.split(' ').join(' OR '));
+          this.queryStackOverflowAPI(error.title.split(" ").join(" OR "));
         }
       }
     }
