@@ -105,24 +105,6 @@ class ErrorCentralMonitor extends EventEmitter {
 
       // Emit event for anyone listening
       this.emit("errorFound", foundError)
-
-      // Post to cloud
-      axios.post("http://wanderingstan.com/ec/ec-monitor.php", {
-        "sessionId": foundError.sessionId,
-        "userName": os.userInfo().username,
-        "blobId": foundError.blobId,
-        "date": foundError.date.toJSON(),
-        "language": foundError.language,
-        "title": foundError.title,
-        "rawText": foundError.rawText,
-      })
-        .then(function (response) {
-          console.log(response);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-
     }
   }
 
@@ -242,6 +224,27 @@ class ErrorCentralMonitor extends EventEmitter {
   }
 }
 
+
+
+function postToCloud(foundError: IFoundError) {
+  // Post to cloud
+  axios.post("http://wanderingstan.com/ec/ec-monitor.php", {
+    "sessionId": foundError.sessionId,
+    "userName": os.userInfo().username,
+    "blobId": foundError.blobId,
+    "date": foundError.date.toJSON(),
+    "language": foundError.language,
+    "title": foundError.title,
+    "rawText": foundError.rawText,
+  })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+}
+
 if (require.main === module) {
   // This module was run directly from the command line as in node xxx.js
 
@@ -264,7 +267,12 @@ if (require.main === module) {
   // Record our pid as *the* running ec-monitor
   fs.writeFileSync(pidFile, process.pid);
 
-  let x = new ErrorCentralMonitor()
+  let ecm = new ErrorCentralMonitor()
+
+  ecm.on("errorFound", (foundError) => {
+    postToCloud(foundError);
+  })
+
   console.log(`💡 ec-monitor: running with with pid ${process.pid}`);
 }
 
