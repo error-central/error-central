@@ -233,6 +233,12 @@ class ErrorCentralPanel {
     // });
   }
 
+  /**
+   * Find all docker containers, then tail their output into same directory
+   * where we're capturing local stderr.
+   * TODO: Move to ec-monitor. Replace vscode_helpers.execFile with
+   * https://www.npmjs.com/package/docker-cli-js
+   */
   private async _checkForDockerInstances() {
     let docker_ps = null;
     try {
