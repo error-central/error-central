@@ -213,11 +213,11 @@ class ErrorCentralPanel {
     // Search Stack Overflow NOTE: Experimental
     this.queryStackOverflowAPI(foundError.title.split(' ').join(' OR '));
 
-    let ecResponse = vscode_helpers.POST(
-      `http://${this.ecHost}/api/query/plaintext`,
-      JSON.stringify({ text: data }),
-      { "Content-Type": "application/json; charset=utf8" }
-    );
+    // let ecResponse = vscode_helpers.POST(
+    //   `http://${this.ecHost}/api/query/plaintext`,
+    //   JSON.stringify({ text: data }),
+    //   { "Content-Type": "application/json; charset=utf8" }
+    // );
 
     // TODO: Why is nothing done with the `response` from stack overflow API?
     // ecResponse.then(async response => {
