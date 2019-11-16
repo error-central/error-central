@@ -60,7 +60,8 @@ class ErrorCentralPanel {
   public static currentPanel: ErrorCentralPanel | undefined;
 
   public static readonly viewType = "errorCentral";
-  public errlogPath: string = path.join(os.homedir(), ".ec", "sessions"); // Directory where we'll tail logs files
+  // Directory where we'll tail logs files TODO: Move all of this to ec-monitor
+  public errlogPath: string = path.join(os.homedir(), ".ec", "sessions");
   public SOQueryTemplate: string =
     "https://api.stackexchange.com/2.2/search/advanced?order=desc&sort=relevance&accepted=True&site=stackoverflow&q=";
 
@@ -70,7 +71,8 @@ class ErrorCentralPanel {
   private _knownDocker: Map<string, string> = new Map();
   private ecHost: string = "localhost";
 
-  private _latsetDiagnostics: Map<string, Date> = new Map(); // Hacky way of recording Problems from problempane
+  // Hacky way of recording Problems from problempane
+  private _latsetDiagnostics: Map<string, Date> = new Map();
 
   public static createOrShow(extensionPath: string) {
 
@@ -93,7 +95,8 @@ class ErrorCentralPanel {
         // Enable javascript in the webview
         enableScripts: true,
 
-        // And restrict the webview to only loading content from our extension's `media` directory.
+        // And restrict the webview to only loading content from our
+        // extension's `media` directory.
         localResourceRoots: [vscode.Uri.file(path.join(extensionPath, "media"))]
       }
     );
@@ -119,12 +122,18 @@ class ErrorCentralPanel {
 
     let ecm = new ErrorCentralMonitor(this._handleError);
 
-    // TODO: when developing locally we need to not create an infinite loop by tailing
-    // our server's stdout
+    // Handle error events
+    ecm.on("errorFound", (foundError: IFoundError) => {
+      this._handleError(foundError);
+    });
+
+    // TODO: when developing locally we need to not create an infinite loop
+    // by tailing our server's stdout
     setInterval(() => this._checkForDockerInstances(), 800);
 
     // Listen for when the panel is disposed
-    // This happens when the user closes the panel or when the panel is closed programatically
+    // This happens when the user closes the panel or when the panel is closed
+    // programatically
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     // Handle messages from the webview

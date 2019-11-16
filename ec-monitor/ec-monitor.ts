@@ -3,6 +3,8 @@ import * as path from "path";
 import * as tail from "tail";
 import * as os from "os";
 import axios from "axios";
+import EventEmitter = require("events");
+
 
 /**
  * Interface/spec for recording details of an error
@@ -20,7 +22,7 @@ interface IFoundError {
 /**
  * Class for monitoring the log files written by our tee hack.
  */
-class ErrorCentralMonitor {
+class ErrorCentralMonitor extends EventEmitter {
 
   // Directory where ec tail logs files all written
   private _errlogPath: string = path.join(os.homedir(), ".ec", "sessions");
@@ -28,10 +30,9 @@ class ErrorCentralMonitor {
   private _filesBeingTailed: { [path: string]: tail.Tail } = {};
   private _tailFilePollIntervalMs = 2000;
   private _blobCounter = 0;
-  private _errorCallBack: Function;
 
-  public constructor(errorCallBack: Function) {
-    this._errorCallBack = errorCallBack;
+  public constructor() {
+    super();
 
     // Check for newly created terminals every so often
     setInterval(() => this.checkForErrlogs(), this._tailFilePollIntervalMs);
@@ -102,10 +103,8 @@ class ErrorCentralMonitor {
       foundError.blobId = ourBlobId;
       foundError.date = new Date();
 
-      // Post to callback
-      if (this._errorCallBack) {
-        this._errorCallBack(foundError);
-      }
+      // Emit event for anyone listening
+      this.emit("errorFound", foundError)
 
       // Post to cloud
       axios.post("http://wanderingstan.com/ec/ec-monitor.php", {
@@ -265,13 +264,8 @@ if (require.main === module) {
   // Record our pid as *the* running ec-monitor
   fs.writeFileSync(pidFile, process.pid);
 
-  let x = new ErrorCentralMonitor(null)
+  let x = new ErrorCentralMonitor()
   console.log(`💡 ec-monitor: running with with pid ${process.pid}`);
 }
 
-// export default ErrorCentralMonitor;
-// module.exports = {
-//   ErrorCentralMonitor
-// };
-// module.exports = 'Hello world';
 module.exports = ErrorCentralMonitor;
