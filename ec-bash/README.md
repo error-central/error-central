@@ -16,15 +16,13 @@ source ec_session.sh
 
 1. Move the file `ec_session.sh` to your home folder (or whereever you like).
 
-2. Install to run for all sessions on Linux:
+2. Install to run for all sessions :
 
 ```bash
+# For Linux
 echo 'source /Users/stan/ec_session.sh' >>~/.bashrc
-```
 
-or for MacOS:
-
-```bash
+# For MacOS
 echo 'source /Users/stan/ec_session.sh' >>~/.bash_profile
 ```
 
