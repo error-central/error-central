@@ -9,8 +9,10 @@ When an error message is found:
 2. A callback function is called. When used with the `vscode-extension`, this
    callback is used to display error info in VS Code.
 
-It can be run standalone, or included as a module in other projects. It is needed by the VSCode extension.
+It can be run standalone, or included as a module in other projects. It is
+needed by the VSCode extension.
 
 ## Development
 
-_We reccomend using the VS Code workspace `./ec.code-workspace` which allows you to work on all EC components simultaneously._
+_We reccomend using the VS Code workspace `./ec.code-workspace` which allows
+you to work on all EC components simultaneously._

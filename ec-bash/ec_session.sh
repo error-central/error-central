@@ -4,6 +4,9 @@
 
 # NOTE: $$ is process id of this terminal
 
+# Create ec directory if needed
+mkdir --parents ~/.ec/sessions
+
 # Let user know we're logging
 touch ~/.ec/sessions/$$.txt
 echo "💡 ec: Saving stderr to file: \"~/.ec/sessions/$$.txt"\"

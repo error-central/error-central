@@ -2,6 +2,10 @@
 
 Simple script that captures all `stderr` data and logs it to files.
 
+When running, `stderr` from terminals will be written in real time
+to files in directory `~/.ec/sessions/` with filenames like `XXX.txt`,
+where XXX is the process id of that terminal.
+
 To try it in a terminal type:
 
 ```bash
@@ -26,4 +30,5 @@ echo 'source /Users/stan/ec_session.sh' >>~/.bash_profile
 
 ## Development
 
-_We reccomend using the VS Code workspace `./ec.code-workspace` which allows you to work on all EC components simultaneously._
+_We reccomend using the VS Code workspace `./ec.code-workspace` which allows
+you to work on all EC components simultaneously._
