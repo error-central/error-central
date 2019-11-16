@@ -104,7 +104,7 @@ class ErrorCentralMonitor extends EventEmitter {
       foundError.date = new Date();
 
       // Emit event for anyone listening
-      this.emit("errorFound", foundError)
+      this.emit("errorFound", foundError);
     }
   }
 
@@ -267,11 +267,11 @@ if (require.main === module) {
   // Record our pid as *the* running ec-monitor
   fs.writeFileSync(pidFile, process.pid);
 
-  let ecm = new ErrorCentralMonitor()
+  let ecm = new ErrorCentralMonitor();
 
   ecm.on("errorFound", (foundError) => {
     postToCloud(foundError);
-  })
+  });
 
   console.log(`💡 ec-monitor: running with with pid ${process.pid}`);
 }
