@@ -9,11 +9,16 @@ practices around errors.
 
 ## Components
 
-ec-bash
+[ec-bash](ec-bash)
 : Simple script to log all `stderr`
 
-ec-monitor
+[ec-monitor](ec-monitor)
 : npm module to monitor those logs for known error messages
 
-vscode-extension
+[vscode-extension](vscode-extension)
 : Pretty UI to view errors and deal with them.
+
+## Development
+
+Best to open `ec.code-workspace` in VS Code, which has the components in a
+workspace, allowing you to work on all at once.
