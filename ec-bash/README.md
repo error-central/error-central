@@ -23,3 +23,7 @@ or for MacOS:
 ```bash
 echo 'source /Users/stan/ec_session.sh' >>~/.bash_profile
 ```
+
+## Development
+
+_We reccomend using the VS Code workspace `./ec.code-workspace` which allows you to work on all EC components simultaneously._

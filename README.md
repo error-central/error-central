@@ -20,5 +20,4 @@ practices around errors.
 
 ## Development
 
-Best to open `ec.code-workspace` in VS Code, which has the components in a
-workspace, allowing you to work on all at once.
+_We reccomend using the VS Code workspace `./ec.code-workspace` which allows you to work on all EC components simultaneously._
