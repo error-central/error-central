@@ -77,9 +77,7 @@ class ErrorCentralPanel {
 
   public static createOrShow(extensionPath: string) {
 
-    const column = vscode.window.activeTextEditor
-      ? vscode.window.activeTextEditor.viewColumn
-      : undefined;
+    const column = vscode.ViewColumn.Beside;
 
     // If we already have a panel, show it.
     if (ErrorCentralPanel.currentPanel) {
