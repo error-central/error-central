@@ -114,7 +114,11 @@ class ErrorCentralMonitor extends EventEmitter {
    */
   public extractError(data: string): IFoundError | null {
     // Patterns for error messages
-    const errorDetectors = [this.findPythonError, this.findNodeError, this.findBashError, this.findGitError];
+    const errorDetectors = [
+      this.findPythonError,
+      this.findNodeError,
+      this.findBashError,
+      this.findGitError];
     for (const detector of errorDetectors) {
       const foundError = detector(data);
       if (foundError) {
