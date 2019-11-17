@@ -5,6 +5,7 @@ import * as os from "os";
 import * as vscode_helpers from "vscode-helpers";
 import Axios, * as axios from "axios";
 var ErrorCentralMonitor = require("ec-monitor");
+import { API as GitAPI, GitExtension, APIState } from "./typings/git";
 
 // TODO: How to import this from ec-montior module?
 /**
@@ -22,12 +23,11 @@ interface IFoundError {
 
 export function activate(context: vscode.ExtensionContext) {
 
-  // const gitExtension = vscode.extensions.getExtension<GitExtension>('vscode.git')!.exports;
-  // const api = gitExtension.getAPI(1);
-  // console.log(msg);
+  const gitExtension = vscode.extensions.getExtension<GitExtension>("vscode.git")!.exports;
+  const api = gitExtension.getAPI(1);
 
-
-  // const rootPath = vscode.workspace.rootPath;
+  const rootPath = vscode.workspace.rootPath;
+  // `isDescendant` is part of common/utils.ts in project vscoce-pull-request
   // const repository = api.repositories.filter(r => isDescendant(r.rootUri.fsPath, rootPath))[0];
 
 
