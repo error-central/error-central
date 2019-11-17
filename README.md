@@ -1,4 +1,4 @@
-# Error Central
+# Error Central  &nbsp; <img src="https://user-images.githubusercontent.com/673455/69014176-b9ed8a80-0944-11ea-9c19-32ed95c2d13d.png" alt="Error Central Logo" width="50">
 
 An exploratory project to improve developer experience (DX) by automating best
 practices around errors.
