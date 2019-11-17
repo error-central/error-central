@@ -22,15 +22,6 @@ interface IFoundError {
 
 export function activate(context: vscode.ExtensionContext) {
 
-  // const gitExtension = vscode.extensions.getExtension<GitExtension>('vscode.git')!.exports;
-  // const api = gitExtension.getAPI(1);
-  // console.log(msg);
-
-
-  // const rootPath = vscode.workspace.rootPath;
-  // const repository = api.repositories.filter(r => isDescendant(r.rootUri.fsPath, rootPath))[0];
-
-
   context.subscriptions.push(
     vscode.commands.registerCommand("errorCentral.start", () => {
       ErrorCentralPanel.createOrShow(context.extensionPath);
