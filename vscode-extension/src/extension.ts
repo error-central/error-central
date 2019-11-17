@@ -148,14 +148,8 @@ class ErrorCentralPanel {
       this._disposables
     );
 
-    // Get notified of new problems
-    console.log("onDidChangeDiagnostics");
-    vscode.languages.onDidChangeDiagnostics((e) => {
-      console.log(e);
-      //console.log(vscode.languages.getDiagnostics());
-      this._exportDiagnostics();
-      console.log(vscode.languages.getDiagnostics(e.uris[0]));
-    });
+    // Get notified of new problems/diagnostics
+    vscode.languages.onDidChangeDiagnostics((e) => this._exportDiagnostics());
 
   }
 
@@ -210,30 +204,6 @@ class ErrorCentralPanel {
 
     // Search Stack Overflow NOTE: Experimental
     this.queryStackOverflowAPI(foundError.title.split(" ").join(" OR "));
-
-    // let ecResponse = vscode_helpers.POST(
-    //   `http://${this.ecHost}/api/query/plaintext`,
-    //   JSON.stringify({ text: data }),
-    //   { "Content-Type": "application/json; charset=utf8" }
-    // );
-
-    // TODO: Why is nothing done with the `response` from stack overflow API?
-    // ecResponse.then(async response => {
-    //   const questions = JSON.parse((await response.readBody()).toString("utf8"));
-    //   const title = data.rawText.trim().split("\n")[0] || "";
-    //   const foundError: IFoundError = {
-    //     language: "",
-    //     rawText: data,
-    //     title,
-    //     googleQs: [title],
-    //     blobId: ourBlobId
-    //   };
-    //   this._panel.webview.postMessage({
-    //     command: "ec-results",
-    //     questions,
-    //     error: foundError
-    //   });
-    // });
   }
 
   /**
@@ -279,53 +249,56 @@ class ErrorCentralPanel {
   }
 
   /* TESTING */
-  // Handle a change in diagnostics aka a change in Problems
+
+  /**
+   *  Handle a change in diagnostics, looking for new problems
+   */
   private _exportDiagnostics() {
     let currentDiagnostics: Map<string, Date> = new Map();
-
-    console.log("----------------------------------------");
     let tuples = vscode.languages.getDiagnostics();
     for (var [thisUri, thisDiagnostics] of tuples) {
       for (let thisDiagnostic of thisDiagnostics) {
 
-        // A hacky way to identify this Problem by uri+code, so we'll
+        if (thisDiagnostic.severity != vscode.DiagnosticSeverity.Error) {
+          // Don't bother with hints and warnings.
+          continue;
+        }
+
+        // HACK: a way to identify this Problem by uri+code, so we'll
         // miss cases where same problem occurs multiple times in same file.
         const diagnosticId = `${thisUri.path}-${thisDiagnostic.code}`;
-        console.log("🔵diagnosticId:", diagnosticId);
-
         currentDiagnostics.set(diagnosticId, new Date());
-
         if (this._latsetDiagnostics.get(diagnosticId)) {
           // We've already seen this Problem
-          // console.log('🌕 Dupe:', diagnosticId)
+          continue;
         }
-        else {
-          // Remember that we saw this Problem so we don't double-send to our UI
-          console.log("🔵We got a thisDiagnostic !️");
-          console.log("thisDiagnostic.message", thisDiagnostic.message);
-          console.log("thisUri.path", thisUri.path);
-          console.log(thisUri);
-          console.log(thisDiagnostic);
-          console.log("--------");
-          // myDiagnosticOutput.startLine = thisDiagnostic.range.start.line;
-          // myDiagnosticOutput.startCharacter = thisDiagnostic.range.start.character;
-          // myDiagnosticOutput.endLine = thisDiagnostic.range.end.line;
-          // myDiagnosticOutput.endCharacter = thisDiagnostic.range.end.character;
-          // diagnosticOutputs.push(myDiagnosticOutput);
 
-          const error: IFoundError = {
-            language: thisDiagnostic.source,
-            rawText: thisDiagnostic.message,
-            title: thisDiagnostic.message,
-            googleQs: [thisDiagnostic.message],
-            sessionId: thisUri.path
-          };
-          this._panel.webview.postMessage({
-            command: "ec",
-            error: error
-          });
-          this.queryStackOverflowAPI(error.title.split(" ").join(" OR "));
-        }
+        // Remember that we saw this Problem so we don't double-send to our UI
+        console.log("🔵We got a thisDiagnostic !️");
+        console.log("thisDiagnostic.message", thisDiagnostic.message);
+        console.log("thisUri.path", thisUri.path);
+        console.log(thisUri);
+        console.log(thisDiagnostic);
+        console.log("--------");
+
+        // myDiagnosticOutput.startLine = thisDiagnostic.range.start.line;
+        // myDiagnosticOutput.startCharacter = thisDiagnostic.range.start.character;
+        // myDiagnosticOutput.endLine = thisDiagnostic.range.end.line;
+        // myDiagnosticOutput.endCharacter = thisDiagnostic.range.end.character;
+        // diagnosticOutputs.push(myDiagnosticOutput);
+
+        const error: IFoundError = {
+          language: thisDiagnostic.source,
+          rawText: thisDiagnostic.message,
+          title: thisDiagnostic.message,
+          googleQs: [thisDiagnostic.message],
+          sessionId: thisUri.path
+        };
+        this._panel.webview.postMessage({
+          command: "ec",
+          error: error
+        });
+        this.queryStackOverflowAPI(error.title.split(" ").join(" OR "));
       }
     }
     this._latsetDiagnostics = currentDiagnostics;
@@ -334,19 +307,18 @@ class ErrorCentralPanel {
 
   public queryStackOverflowAPI(q: string) {
     console.log("Querying StackOverflow with: " + q);
-    //    questions = questions.map((question: any) => ({ title: question.title, link: question.link, id: question.question_id, body: question.body, owner: question.owner }));
     let soResult = Axios.get(
       this.SOQueryTemplate + encodeURIComponent(q)
     );
     soResult.then(response => {
-      console.log("We got results from stackex!");
+      console.log("We got results from StackOverflow");
       const { items, quota_remaining } = response.data;
       this._panel.webview.postMessage({ command: "questions", questions: items });
       console.log(items);
     });
     soResult.catch(err => {
       this._panel.webview.postMessage({ command: "error", message: "We have trouble getting results from the StackOverflow API." });
-      console.log(err);
+      console.error(err);
     });
   }
 
