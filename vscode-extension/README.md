@@ -11,17 +11,19 @@ you to work on all EC components simultaneously._
 
    ```bash
    # Clone repo if not already there
-   git clone git@github.com:error-central/error-central.git
+   git clone git@github.com:error-central/error-central.git 
    cd error-central/
    git checkout ec-to-cloud
-   
+
    cd ec-monitor/
    npm install
-   npm link # Creates system symlink for `ec-monitor`
    tsc --project . # Compile ts into js
+   npm link # Create system symlink for `ec-monitor`
+
    cd ../vscode-extension
    npm install
    npm link ec-monitor # Link to the local module
+   
    code ../ec.code-workspace
    ```
 
