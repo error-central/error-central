@@ -13,7 +13,6 @@ you to work on all EC components simultaneously._
    # Clone repo if not already there
    git clone git@github.com:error-central/error-central.git 
    cd error-central/
-   git checkout ec-to-cloud
 
    cd ec-monitor/
    npm install
