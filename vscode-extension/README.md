@@ -7,20 +7,22 @@ you to work on all EC components simultaneously._
 
 1. For development it is best to _link_ to the `ec-monitor` module, so changes
    to its code are immediately used elsewhere. Do this with
-   the following commands starting from this directory:
+   the following commands:
 
    ```bash
-   cd ../ec-monitor
-
-   npm link # Creates system symlink for `ec-monitor`
-
-   tsc --project . # Compile ts into js
-
-   cd ../vscode-extension
-
-   npm link ec-monitor # Uses local symlink
-
+   # Clone repo if not already there
+   git clone git@github.com:error-central/error-central.git
+   cd error-central/
+   git checkout ec-to-cloud
+   
+   cd ec-monitor/
    npm install
+   npm link # Creates system symlink for `ec-monitor`
+   tsc --project . # Compile ts into js
+   cd ../vscode-extension
+   npm install
+   npm link ec-monitor # Link to the local module
+   code ../ec.code-workspace
    ```
 
 2. Select `Launch VSCode Extension` from VS Code debug launcher.
