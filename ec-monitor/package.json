@@ -8,6 +8,8 @@
   },
   "main": "out/ec-monitor.js",
   "scripts": {
+    "postinstall": "node out/install.js",
+    "uninstall": "node out/uninstall.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

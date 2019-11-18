@@ -8,8 +8,6 @@ const mkdirp = promisify(require('mkdirp'));
 const { tabtabDebug, systemShell, exists } = require('./utils');
 
 const debug = tabtabDebug('tabtab:installer');
-console.log("debug out", debug)
-
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 const unlink = promisify(fs.unlink);
@@ -153,9 +151,9 @@ const writeLineToFilename = ({ filename, scriptname, name }) => (
       debug('Writing to shell configuration file (%s)', filename);
       debug('scriptname:', scriptname);
 
-      stream.write(`\n# launch error-central monitoring`);
-      stream.write(`\n# https://github.com/error-central/error-central`);
-      stream.write('\n# uninstall by removing these lines');
+      // NOTE: This must be *EXACTLY* 3 lines. The delete code expects this.
+      stream.write(`\n# launch error-central monitoring: https://github.com/error-central/error-central`);
+      stream.write('\n# uninstall by removing these 3 lines');
       stream.write(`\n${sourceLineForShell(scriptname)}`);
       stream.end('\n');
 
@@ -295,7 +293,7 @@ const install = async (options = { name: '', completer: '', location: '' }) => {
   ]).then(() => {
     const { location, name } = options;
     console.log(`
-      => Error-central source line added to ${location} for ${name} package.
+      => Error-central source line added to "${location}" for ${name} package.
 
       Make sure to reload your SHELL.
     `);

@@ -1,5 +1,3 @@
-###-begin-{pkgname}-completion-###
-
 echo "Not tested on zsh..." # TODO: Test on zsh
 
 # NOTE: this file must be called with `source` not `bash`
@@ -30,5 +28,3 @@ screen -S ec-monitor -dm node ~/code/ec/ec-monitor/out/ec-monitor.js
 # Get current pwd of bash session with:
 # https://stackoverflow.com/questions/8327139/working-directory-of-running-process-on-mac-os
 # https://unix.stackexchange.com/questions/94357/find-out-current-working-directory-of-a-running-process
-
-###-end-{pkgname}-completion-###
