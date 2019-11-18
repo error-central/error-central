@@ -7,9 +7,6 @@
       "path": "ec-monitor"
     },
     {
-      "path": "ec-bash"
-    },
-    {
       "path": "."
     }
   ],
