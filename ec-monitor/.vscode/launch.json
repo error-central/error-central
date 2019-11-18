@@ -8,10 +8,14 @@
       "type": "node",
       "request": "launch",
       "name": "Launch TS Program",
-      "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/ec-monitor.ts",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/src/ec-monitor.ts",
       "preLaunchTask": "tsc: build - tsconfig.json",
-      "outFiles": ["${workspaceFolder}/**/*.js"]
+      "outFiles": [
+        "${workspaceFolder}/**/*.js"
+      ]
     }
   ]
 }

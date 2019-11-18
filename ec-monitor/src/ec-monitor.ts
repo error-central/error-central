@@ -4,7 +4,15 @@ import * as tail from "tail";
 import * as os from "os";
 import axios from "axios";
 import EventEmitter = require("events");
+const installer = require("./installer");
 
+console.log(installer);
+
+// installer.install({
+//   name: "bob",
+//   completer: "complete",
+//   location: "here"
+// });
 
 /**
  * Interface/spec for recording details of an error
@@ -236,7 +244,7 @@ function postToCloud(foundError: IFoundError) {
     "sessionId": foundError.sessionId,
     "userName": os.userInfo().username,
     "blobId": foundError.blobId,
-    "date": foundError.date.toJSON(),
+    "date": foundError.date ? foundError.date.toJSON() : null,
     "language": foundError.language,
     "title": foundError.title,
     "rawText": foundError.rawText,
