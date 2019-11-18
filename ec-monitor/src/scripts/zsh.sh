@@ -11,7 +11,7 @@ mkdir -p ~/.ec/sessions
 
 # Let user know we're logging
 touch ~/.ec/sessions/$$.txt
-echo "💡 ec: Saving stderr to file: \"~/.ec/sessions/$$.txt"\"
+echo "🐛 ec: Saving stderr to file: \"~/.ec/sessions/$$.txt"\"
 
 # Run diffenv, if it's installed
 if [ -x "$(command -v diffenv)" ]; then

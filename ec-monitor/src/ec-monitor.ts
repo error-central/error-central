@@ -276,7 +276,7 @@ if (require.main === module) {
     postToCloud(foundError);
   });
 
-  console.log(`💡 ec-monitor: running with with pid ${process.pid}`);
+  console.log(`🐛 ec-monitor: running with with pid ${process.pid}`);
 }
 
 module.exports = ErrorCentralMonitor;
