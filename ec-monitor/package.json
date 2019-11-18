@@ -1,5 +1,5 @@
 {
-  "name": "ec-monitor",
+  "name": "error-central",
   "version": "0.0.1",
   "description": "Montitor logs from ec bash script and send to cloud.",
   "repository": {
@@ -11,7 +11,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "ec"
+    "ec",
+    "error",
+    "central",
+    "error-central"
   ],
   "author": "Stan James",
   "license": "MIT",

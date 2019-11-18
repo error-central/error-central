@@ -1,9 +1,15 @@
 {
-  "name": "error-central",
-  "description": "Error Central VS Code webview",
+  "name": "vscode-error-central",
+  "description": "Error Central Extension for VS Code",
   "version": "0.0.1",
   "publisher": "error-central",
   "license": "MIT",
+  "keywords": [
+    "ec",
+    "error",
+    "central",
+    "error-central"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/error-central/error-central.git"
