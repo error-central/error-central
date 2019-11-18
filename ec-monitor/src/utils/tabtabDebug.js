@@ -9,6 +9,7 @@ const tabtabDebug = name => {
   /* eslint-disable global-require */
   let debug = require('debug')(name);
 
+  console.log('process.env.TABTAB_DEBUG', process.env.TABTAB_DEBUG)
   if (process.env.TABTAB_DEBUG) {
     const file = process.env.TABTAB_DEBUG;
     const stream = fs.createWriteStream(file, {

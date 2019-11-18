@@ -8,6 +8,7 @@ const mkdirp = promisify(require('mkdirp'));
 const { tabtabDebug, systemShell, exists } = require('./utils');
 
 const debug = tabtabDebug('tabtab:installer');
+console.log("debug out", debug)
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
@@ -129,7 +130,7 @@ const checkFilenameForLine = async (filename, line) => {
 
 /**
  * Opens a file for modification adding a new `source` line for the given
- * SHELL. Used for both SHELL script and tabtab internal one.
+ * SHELL. Used for both SHELL script and error-central internal one.
  *
  * @param {Object} options - Options with
  *    - filename: The file to modify
@@ -152,13 +153,8 @@ const writeLineToFilename = ({ filename, scriptname, name }) => (
       debug('Writing to shell configuration file (%s)', filename);
       debug('scriptname:', scriptname);
 
-      const inShellConfig = isInShellConfig(filename);
-      if (inShellConfig) {
-        stream.write(`\n# error-central source for packages`);
-      } else {
-        stream.write(`\n# error-central source for ${name} package`);
-      }
-
+      stream.write(`\n# launch error-central monitoring`);
+      stream.write(`\n# https://github.com/error-central/error-central`);
       stream.write('\n# uninstall by removing these lines');
       stream.write(`\n${sourceLineForShell(scriptname)}`);
       stream.end('\n');
@@ -181,17 +177,18 @@ const writeLineToFilename = ({ filename, scriptname, name }) => (
  *    - name: The package configured for completion
  */
 const writeToShellConfig = async ({ location, name }) => {
-  const scriptname = path.join(
-    COMPLETION_DIR,
-    `${TABTAB_SCRIPT_NAME}.${shellExtension()}`
-  );
+  // const scriptname = path.join(
+  //   COMPLETION_DIR,
+  //   `${TABTAB_SCRIPT_NAME}.${shellExtension()}`
+  // );
+  const scriptname = path.join(__dirname, '../src/scripts/bash.sh');
 
-  const filename = location;
+  const filename = location; // File to be modified, e.g. .bashrc
 
   // Check if SHELL script already has a line for error-central
   const existing = await checkFilenameForLine(filename, scriptname);
   if (existing) {
-    return console.log('=> Tabtab line already exists in %s file', filename);
+    return console.log('=> error-central line already exists in %s file', filename);
   }
 
   return new Promise(
@@ -293,8 +290,8 @@ const install = async (options = { name: '', completer: '', location: '' }) => {
 
   await Promise.all([
     writeToShellConfig(options),
-    writeToTabtabScript(options),
-    writeToCompletionScript(options)
+    // writeToTabtabScript(options),
+    // writeToCompletionScript(options)
   ]).then(() => {
     const { location, name } = options;
     console.log(`

@@ -7,13 +7,6 @@ import EventEmitter = require("events");
 const installer = require("./installer");
 const prompt = require("./prompt");
 
-// console.log(installer);
-
-// installer.install({
-//   name: "bob",
-//   completer: "complete",
-//   location: "here"
-// });
 
 const install = async (options = { name: '', completer: '' }) => {
   const { name, completer } = options;
