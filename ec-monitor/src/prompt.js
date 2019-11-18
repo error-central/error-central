@@ -35,7 +35,7 @@ const prompt = () => {
       debug('answers', shell);
 
       const location = locations[shell];
-      debug(`Will install completion to ${location}`);
+      debug(`Will install error-central to ${location}`);
 
       Object.assign(finalAnswers, { location, shell });
       return location;
@@ -44,7 +44,7 @@ const prompt = () => {
       ask({
         type: 'confirm',
         name: 'locationOK',
-        message: `We will install completion to ${location}, is it ok ?`
+        message: `We will error-central monitoring to ${location}, is it ok ?`
       })
     )
     .then(answers => {
