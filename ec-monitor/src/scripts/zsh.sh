@@ -1,3 +1,9 @@
+# Simple script that captures all `stderr` data and logs it to files.
+
+# When running, `stderr` from terminals will be written in real time
+# to files in directory `~/.ec/sessions/` with filenames like `XXX.txt`,
+# where XXX is the process id of that terminal.
+
 echo "Not tested on zsh..." # TODO: Test on zsh
 
 # NOTE: this file must be called with `source` not `bash`

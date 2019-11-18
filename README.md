@@ -9,14 +9,11 @@ practices around errors.
 
 ## Components
 
-[ec-bash](ec-bash)
-: Simple script to log all `stderr`
-
 [ec-monitor](ec-monitor)
 : npm module to monitor those logs for known error messages
 
 [vscode-extension](vscode-extension)
-: Pretty UI to view errors and deal with them.
+: MS Code extension with pretty UI to view errors and deal with them.
 
 ## Development
 
