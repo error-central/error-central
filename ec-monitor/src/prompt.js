@@ -39,7 +39,13 @@ const prompt = () => {
       const { shell } = answers;
       debug('answers', shell);
 
-      const location = locations[shell];
+      let location = locations[shell];
+
+      // HACK: On MacOS (darwin) .bashrc isn't run by default
+      if (shell == 'bash' && process.platform == 'darwin') {
+        location = '~/.bash_profile';
+      }
+
       debug(`Will install error-central to ${location}`);
 
       Object.assign(finalAnswers, { location, shell });

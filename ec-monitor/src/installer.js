@@ -151,9 +151,12 @@ const writeLineToFilename = ({ filename, scriptname, name }) => (
       debug('Writing to shell configuration file (%s)', filename);
       debug('scriptname:', scriptname);
 
+      // This seems to work. Might be better than asking.
+      // stream.write(systemShell())
+
       // NOTE: This must be *EXACTLY* 3 lines. The delete code expects this.
-      stream.write(`\n# launch error-central monitoring: https://github.com/error-central/error-central`);
-      stream.write('\n# uninstall by removing these 3 lines');
+      stream.write(`\n# Launch error-central monitoring: https://github.com/error-central/error-central`);
+      stream.write('\n# Uninstall by removing these 3 lines');
       stream.write(`\n${sourceLineForShell(scriptname)}`);
       stream.end('\n');
 
@@ -199,66 +202,6 @@ const writeToShellConfig = async ({ location, name }) => {
 };
 
 /**
- * Writes to tabtab internal script that acts as a frontend router for the
- * completion mechanism, in the internal ~/.config/tabtab directory. Every
- * completion is added to this file.
- *
- * @param {Object} options - Options object with
- *    - name: The package configured for completion
- */
-const writeToTabtabScript = async ({ name }) => {
-  const filename = path.join(
-    COMPLETION_DIR,
-    `${TABTAB_SCRIPT_NAME}.${shellExtension()}`
-  );
-
-  const scriptname = path.join(COMPLETION_DIR, `${name}.${shellExtension()}`);
-
-  // Check if tabtab completion file already has this line in it
-  const existing = await checkFilenameForLine(filename, scriptname);
-  if (existing) {
-    return console.log('=> Tabtab line already exists in %s file', filename);
-  }
-
-  return new Promise(writeLineToFilename({ filename, scriptname, name }));
-};
-
-/**
- * This writes a new completion script in the internal `~/.config/tabtab`
- * directory. Depending on the SHELL used, a different script is created for
- * the given SHELL.
- *
- * @param {Object} options - Options object with
- *    - name: The package configured for completion
- *    - completer: The binary that will act as the completer for `name` program
- */
-const writeToCompletionScript = ({ name, completer }) => {
-  const filename = untildify(
-    path.join(COMPLETION_DIR, `${name}.${shellExtension()}`)
-  );
-
-  const script = scriptFromShell();
-  debug('Writing completion script to', filename);
-  debug('with', script);
-
-  return readFile(script, 'utf8')
-    .then(filecontent =>
-      filecontent
-        .replace(/\{pkgname\}/g, name)
-        .replace(/{completer}/g, completer)
-        // on Bash on windows, we need to make sure to remove any \r
-        .replace(/\r?\n/g, '\n')
-    )
-    .then(filecontent =>
-      mkdirp(path.dirname(filename)).then(() =>
-        writeFile(filename, filecontent)
-      )
-    )
-    .then(() => console.log('=> Wrote completion script to %s file', filename))
-    .catch(err => console.error('ERROR:', err));
-};
-
-/**
  * Top level install method. Does three things:
  *
  * - Writes to SHELL config file, adding a new line to tabtab internal script.
@@ -267,19 +210,14 @@ const writeToCompletionScript = ({ name, completer }) => {
  *
  * @param {Object} options - Options object with
  *    - name: The program name to complete
- *    - completer: The actual program or binary that will act as the completer
  *    for `name` program. Can be the same.
  *    - location: The SHELL script config location (~/.bashrc, ~/.zshrc or
  *    ~/.config/fish/config.fish)
  */
-const install = async (options = { name: '', completer: '', location: '' }) => {
+const install = async (options = { name: '', location: '' }) => {
   debug('Install with options', options);
   if (!options.name) {
     throw new Error('options.name is required');
-  }
-
-  if (!options.completer) {
-    throw new Error('options.completer is required');
   }
 
   if (!options.location) {
@@ -287,9 +225,7 @@ const install = async (options = { name: '', completer: '', location: '' }) => {
   }
 
   await Promise.all([
-    writeToShellConfig(options),
-    // writeToTabtabScript(options),
-    // writeToCompletionScript(options)
+    writeToShellConfig(options)
   ]).then(() => {
     const { location, name } = options;
     console.log(`
@@ -411,7 +347,5 @@ module.exports = {
   uninstall,
   checkFilenameForLine,
   writeToShellConfig,
-  writeToTabtabScript,
-  writeToCompletionScript,
   writeLineToFilename
 };

@@ -8,16 +8,14 @@ const prompt = require("./prompt");
  * Install error-central
  * @param options
  */
-const install = async (options = { name: "", completer: "" }) => {
-  const { name, completer } = options;
+const install = async (options = { name: "" }) => {
+  const { name } = options;
   if (!name) throw new TypeError("options.name is required");
-  if (!completer) throw new TypeError("options.completer is required");
 
   return prompt().then((x: any) => {
     let location = x.location;
     installer.install({
       name,
-      completer,
       location
     });
   }
@@ -25,7 +23,6 @@ const install = async (options = { name: "", completer: "" }) => {
 };
 
 install({
-  name: "ec",
-  completer: "ec-completer??"
+  name: "ec"
 });
 
