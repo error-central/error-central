@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const path = require('path');
 const debug = require('./utils/tabtabDebug')('tabtab:prompt');
+const chalk = require('chalk');
 
 /**
  * Asks user about SHELL and desired location.
@@ -11,8 +12,9 @@ const debug = require('./utils/tabtabDebug')('tabtab:prompt');
 const prompt = () => {
   const ask = inquirer.createPromptModule();
 
-  console.log('🐛 Thank you for installing Error Central! 🐛\n')
-  console.log('To capture errors, we need to install a script that runs each session.\n')
+  console.log('🐛' + chalk.white.bold(' Thank you for installing Error Central! ') + '🐛')
+  console.log()
+  console.log('To capture errors, we need to install a script that runs each session.')
 
   const questions = [
     {
