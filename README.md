@@ -1,22 +1,24 @@
-# Error Central
+# Error Central  &nbsp; <img src="https://user-images.githubusercontent.com/673455/69014176-b9ed8a80-0944-11ea-9c19-32ed95c2d13d.png" alt="Error Central Logo" width="50">
 
-Simple script that captures all stderr and saves to files
+An exploratory project to improve developer experience (DX) by automating best
+practices around errors.
 
-```bash
-source ec_session.sh
-```
+- Automate the copy-paste-search-stackoverflow loop
+- Automate good developer search practices
+- More
 
+## Components
 
-Install to run for all sessions:
-```bash
-echo 'source /Users/stan/tee-log.sh' >>~/.bashrc
-```
+[ec-bash](ec-bash)
+: Simple script to log all `stderr`
 
-or for MacOS:
-```bash
-echo 'source /Users/stan/tee-log.sh' >>~/.bash_profile
-```
+[ec-monitor](ec-monitor)
+: npm module to monitor those logs for known error messages
 
-### Notes
+[vscode-extension](vscode-extension)
+: Pretty UI to view errors and deal with them.
 
-The `exec...` command cannot be put into a shell script, because shell scripts get their own little version of bash which exists only for the script, and that's the one that has output redirected.
+## Development
+
+_We reccomend using the VS Code workspace `./ec.code-workspace` which allows
+you to work on all EC components simultaneously._

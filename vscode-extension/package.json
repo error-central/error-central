@@ -1,45 +1,50 @@
 {
-	"name": "error-central",
-	"description": "Error Central VS Code webview",
-	"version": "0.0.1",
-	"publisher": "error-central",
-	"engines": {
-		"vscode": "^1.32.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"onCommand:errorCentral.start",
-		"onWebviewPanel:errorCentral"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "errorCentral.start",
-				"title": "Start error central session",
-				"category": "Error Central"
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"lint": "tslint -p ./",
-		"watch": "tsc -w -p ./"
-	},
-	"dependencies": {
-		"axios": "^0.19.0",
-		"@types/tail": "^1.2.1",
-		"tail": "^2.0.3",
-		"vscode-helpers": "^4.0.1"
-	},
-	"devDependencies": {
-		"@types/axios": "^0.14.0",
-		"@types/node": "^10.5.2",
-		"tslint": "^5.16.0",
-		"typescript": "^3.5.1",
-		"@types/vscode": "^1.32.0"
-	}
+  "name": "error-central",
+  "description": "Error Central VS Code webview",
+  "version": "0.0.1",
+  "publisher": "error-central",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/error-central/error-central.git"
+  },
+  "engines": {
+    "vscode": "^1.32.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:errorCentral.start",
+    "onWebviewPanel:errorCentral"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "errorCentral.start",
+        "title": "Start error central session",
+        "category": "Error Central"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "lint": "tslint -p ./",
+    "watch": "tsc -w -p ./"
+  },
+  "dependencies": {
+    "@types/tail": "^1.2.1",
+    "axios": "^0.19.0",
+    "tail": "^2.0.3",
+    "vscode-helpers": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/node": "^10.5.2",
+    "tslint": "^5.16.0",
+    "typescript": "^3.5.1",
+    "@types/vscode": "^1.32.0"
+  }
 }

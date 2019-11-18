@@ -1,0 +1,23 @@
+{
+  "folders": [
+    {
+      "path": "vscode-extension"
+    },
+    {
+      "path": "ec-monitor"
+    },
+    {
+      "path": "ec-bash"
+    },
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "typescript.format.semicolons": "insert",
+    "javascript.format.semicolons": "insert",
+    "javascript.preferences.quoteStyle": "double",
+    "typescript.preferences.quoteStyle": "double",
+    "editor.formatOnSave": true
+  }
+}
