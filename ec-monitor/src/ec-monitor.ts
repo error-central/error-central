@@ -5,14 +5,36 @@ import * as os from "os";
 import axios from "axios";
 import EventEmitter = require("events");
 const installer = require("./installer");
+const prompt = require("./prompt");
 
-console.log(installer);
+// console.log(installer);
 
 // installer.install({
 //   name: "bob",
 //   completer: "complete",
 //   location: "here"
 // });
+
+const install = async (options = { name: '', completer: '' }) => {
+  const { name, completer } = options;
+  if (!name) throw new TypeError('options.name is required');
+  if (!completer) throw new TypeError('options.completer is required');
+
+  return prompt().then((x: any) => {
+    let location = x.location;
+    installer.install({
+      name,
+      completer,
+      location
+    })
+  }
+  );
+};
+
+install({
+  name: 'ec',
+  completer: 'ec-completer??'
+});
 
 /**
  * Interface/spec for recording details of an error

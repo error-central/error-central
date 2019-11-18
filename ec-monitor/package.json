@@ -23,6 +23,7 @@
     "axios": "^0.19.0",
     "es6-promisify": "^6.0.2",
     "fs": "0.0.1-security",
+    "inquirer": "^7.0.0",
     "mkdirp": "^0.5.1",
     "path": "^0.12.7",
     "tail": "^2.0.3",

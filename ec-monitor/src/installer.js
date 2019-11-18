@@ -36,15 +36,15 @@ const shellExtension = () => systemShell();
  */
 const scriptFromShell = (shell = systemShell()) => {
   if (shell === 'fish') {
-    return path.join(__dirname, 'scripts/fish.sh');
+    return path.join(__dirname, '../src/scripts/fish.sh');
   }
 
   if (shell === 'zsh') {
-    return path.join(__dirname, 'scripts/zsh.sh');
+    return path.join(__dirname, '../src/scripts/zsh.sh');
   }
 
   // For Bash and others
-  return path.join(__dirname, 'scripts/bash.sh');
+  return path.join(__dirname, '../src/scripts/bash.sh');
 };
 
 /**
@@ -154,16 +154,16 @@ const writeLineToFilename = ({ filename, scriptname, name }) => (
 
       const inShellConfig = isInShellConfig(filename);
       if (inShellConfig) {
-        stream.write(`\n# tabtab source for packages`);
+        stream.write(`\n# error-central source for packages`);
       } else {
-        stream.write(`\n# tabtab source for ${name} package`);
+        stream.write(`\n# error-central source for ${name} package`);
       }
 
       stream.write('\n# uninstall by removing these lines');
       stream.write(`\n${sourceLineForShell(scriptname)}`);
       stream.end('\n');
 
-      console.log('=> Added tabtab source line in "%s" file', filename);
+      console.log('=> Added error-central source line in "%s" file', filename);
     })
     .catch(err => {
       console.error('mkdirp ERROR', err);
@@ -173,7 +173,7 @@ const writeLineToFilename = ({ filename, scriptname, name }) => (
 
 /**
  * Writes to SHELL config file adding a new line, but only one, to the SHELL
- * config script. This enables tabtab to work for the given SHELL.
+ * config script. This enables error-central to work for the given SHELL.
  *
  * @param {Object} options - Options object with
  *    - location: The SHELL script location (~/.bashrc, ~/.zshrc or
@@ -188,7 +188,7 @@ const writeToShellConfig = async ({ location, name }) => {
 
   const filename = location;
 
-  // Check if SHELL script already has a line for tabtab
+  // Check if SHELL script already has a line for error-central
   const existing = await checkFilenameForLine(filename, scriptname);
   if (existing) {
     return console.log('=> Tabtab line already exists in %s file', filename);
@@ -298,7 +298,7 @@ const install = async (options = { name: '', completer: '', location: '' }) => {
   ]).then(() => {
     const { location, name } = options;
     console.log(`
-      => Tabtab source line added to ${location} for ${name} package.
+      => Error-central source line added to ${location} for ${name} package.
 
       Make sure to reload your SHELL.
     `);
