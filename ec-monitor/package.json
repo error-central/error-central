@@ -1,6 +1,6 @@
 {
   "name": "error-central",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "Montitor logs from ec bash script and send to cloud.",
   "repository": {
     "type": "git",
