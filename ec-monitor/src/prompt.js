@@ -11,11 +11,14 @@ const debug = require('./utils/tabtabDebug')('tabtab:prompt');
 const prompt = () => {
   const ask = inquirer.createPromptModule();
 
+  console.log('🐛 Thank you for installing Error Central! 🐛\n')
+  console.log('To capture errors, we need to install a script that runs each session.\n')
+
   const questions = [
     {
       type: 'list',
       name: 'shell',
-      message: 'Which Shell do you use ?',
+      message: 'Which shell do you use ?',
       choices: ['bash', 'zsh', 'fish'],
       default: 'bash'
     }

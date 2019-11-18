@@ -3,4 +3,5 @@
  */
 
 // TODO: Smarter uninstall
-console.info("🐛 Remember to remove error-central lines from your .bashrc file.");
+// We can't do this log, because this gets called ALSO before a new install.
+// console.info("🐛 Remember to remove error-central lines from your .bashrc file.");

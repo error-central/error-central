@@ -1,17 +1,22 @@
 {
   "name": "error-central",
-  "version": "0.0.2",
+  "version": "0.0.12",
   "description": "Montitor logs from ec bash script and send to cloud.",
   "repository": {
     "type": "git",
     "url": "https://github.com/error-central/error-central.git"
   },
   "main": "out/ec-monitor.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "out/**/*"
+  ],
   "scripts": {
-    "postinstall": "node out/install.js",
-    "uninstall": "node out/uninstall.js",
+    "postinstall": "node ./out/postinstall.js",
+    "uninstall": "node ./out/uninstall.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "prepublish": "tsc",
   "keywords": [
     "ec",
     "error",

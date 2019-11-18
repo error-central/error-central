@@ -24,11 +24,11 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch ec install",
+      "name": "Launch ec postinstall",
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/src/install.ts",
+      "program": "${workspaceFolder}/src/postinstall.ts",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/**/*.js"
