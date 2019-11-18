@@ -4,18 +4,24 @@
 
 # NOTE: $$ is process id of this terminal
 
-# Create ec directory if needed
-mkdir --parents ~/.ec/sessions
+# Create .ec directory if not already there
+mkdir -p ~/.ec/sessions
 
 # Let user know we're logging
 touch ~/.ec/sessions/$$.txt
 echo "💡 ec: Saving stderr to file: \"~/.ec/sessions/$$.txt"\"
 
-# Run diffenv
-diffenv > ~/.ec/diffenv/$$.yaml
+# Run diffenv, if it's installed
+if [ -x "$(command -v diffenv)" ]; then
+  diffenv > ~/.ec/diffenv/$$.yaml
+fi
 
 # Log stderr to file
 exec 2> >(tee ~/.ec/sessions/$$.txt 1>&2)
+
+# Launch monitor (it will check if its already running.)
+# TODO: Change to global npm once we have this in npm package.
+screen -S ec-monitor -dm node ~/code/ec/ec-monitor/out/ec-monitor.js
 
 # Get current pwd of bash session with:
 # https://stackoverflow.com/questions/8327139/working-directory-of-running-process-on-mac-os
