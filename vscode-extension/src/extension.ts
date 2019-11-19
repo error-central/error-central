@@ -6,6 +6,10 @@ import * as vscode_helpers from "vscode-helpers";
 import Axios, * as axios from "axios";
 var ErrorCentralMonitor = require("ec-monitor");
 
+// Common data to be used elsewhere
+let terminalData = {};
+
+
 // TODO: How to import this from ec-montior module?
 /**
  * Interface/spec for recording details of an error
@@ -40,6 +44,16 @@ export function activate(context: vscode.ExtensionContext) {
       }
     });
   }
+
+  (<any>vscode.window).onDidWriteTerminalData((e: any) => {
+    vscode.window.showInformationMessage(`onDidWriteTerminalData listener attached, check the devtools console to see events`);
+    console.log("onDidWriteData", e);
+  });
+
+  // vscode.window.onDidOpenTerminal(t => {
+  //   registerTerminalForCapture(t);
+  // });
+
 }
 
 /**
@@ -325,3 +339,16 @@ function getNonce() {
   return text;
 }
 
+
+// function registerTerminalForCapture(terminal: vscode.Terminal) {
+//   terminal.processId.then(terminalId => {
+//     (<any>terminalData)[terminalId] = "";
+//     (<any>terminal).onDidWriteData((data: any) => {
+//       // TODO:
+//       //   - Need to remove (or handle) backspace
+//       //   - not sure what to do about carriage return???
+//       //   - might have some odd output
+//       (<any>terminalData)[terminalId] += data;
+//     });
+//   });
+// }

@@ -1,4 +1,5 @@
 {
+  "enableProposedAPI": true,
   "name": "error-central",
   "description": "Error Central VS Code webview",
   "version": "0.0.1",
