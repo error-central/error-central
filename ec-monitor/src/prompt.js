@@ -55,7 +55,7 @@ const prompt = () => {
       ask({
         type: 'confirm',
         name: 'locationOK',
-        message: `We will error-central monitoring to ${location}, is it ok ?`
+        message: `We will add error-central monitoring to ${location}, is it ok ?`
       })
     )
     .then(answers => {
@@ -68,7 +68,7 @@ const prompt = () => {
       // otherwise, ask for specific **absolute** path
       return ask({
         name: 'userLocation',
-        message: 'Which path then ? Must be absolute.',
+        message: 'Ok, which path should we install to? Must be absolute.',
         validate: input => {
           debug('Validating input', input);
           return path.isAbsolute(input);
