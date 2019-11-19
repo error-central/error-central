@@ -1,7 +1,7 @@
 {
   "name": "error-central",
-  "version": "0.0.14",
-  "description": "Montitor logs from ec bash script and send to cloud.",
+  "version": "0.0.16",
+  "description": "Montitor stderr for logs.",
   "repository": {
     "type": "git",
     "url": "https://github.com/error-central/error-central.git"
@@ -9,7 +9,8 @@
   "main": "out/ec-monitor.js",
   "types": "dist/index.d.ts",
   "files": [
-    "out/**/*"
+    "out/**/*",
+    "src/scripts/**/*"
   ],
   "scripts": {
     "postinstall": "node ./out/postinstall.js",
