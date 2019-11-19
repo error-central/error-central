@@ -34,12 +34,16 @@ else
   exec 2> >(tee ~/.ec/sessions/$$.txt 1>&2)
 fi
 
+# Get current directory
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+# Script path
+SCRIPT_PATH="$DIR/../../out/ec-monitor.js"
 
 # Launch monitor (it will check if its already running.)
-node /usr/local/lib/node_modules/error-central/out/ec-monitor.js &
-disown
-# Alternate launch method that doesn't print anything:
-# screen -S ec-monitor -dm node /usr/local/lib/node_modules/error-central/out/ec-monitor.js
+screen -S ec-monitor -dm node $SCRIPT_PATH
+# Alternate launch method that prints debug output:
+# node $SCRIPT_PATH &
+# disown
 
 # Get current pwd of bash session with:
 # https://stackoverflow.com/questions/8327139/working-directory-of-running-process-on-mac-os

@@ -1,3 +1,4 @@
+#!/bin/bash
 # Simple script that captures all `stderr` data and logs it to files.
 
 # When running, `stderr` from terminals will be written in real time
@@ -22,14 +23,27 @@ if [ -x "$(command -v diffenv)" ]; then
   diffenv > ~/.ec/diffenv/$$.yaml
 fi
 
-# Log stderr to file
-exec 2> >(tee ~/.ec/sessions/$$.txt 1>&2)
+# Log to file
+if [ -n $EC_LOG_STDOUT_FLAG ]; then
+  # Flag is set, log stdout+stderr
+  # (Needed for e.g. Typescript, see https://github.com/Microsoft/TypeScript/issues/615 )
+  # https://unix.stackexchange.com/a/145654/311933
+  exec &> >(tee ~/.ec/sessions/$$.txt)
+else
+  # Log only stderr (Normal case)
+  exec 2> >(tee ~/.ec/sessions/$$.txt 1>&2)
+fi
+
+# Get current directory (zsh specific)
+DIR=$0:A
+# Script path
+SCRIPT_PATH="$DIR/../../out/ec-monitor.js"
 
 # Launch monitor (it will check if its already running.)
-node /usr/local/lib/node_modules/error-central/out/ec-monitor.js &
-disown
-# Alternate launch method that doesn't print anything:
-# screen -S ec-monitor -dm node /usr/local/lib/node_modules/error-central/out/ec-monitor.js
+screen -S ec-monitor -dm node $SCRIPT_PATH
+# Alternate launch method that prints debug output:
+# node $SCRIPT_PATH &
+# disown
 
 # Get current pwd of bash session with:
 # https://stackoverflow.com/questions/8327139/working-directory-of-running-process-on-mac-os
