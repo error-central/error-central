@@ -189,7 +189,7 @@ const writeToShellConfig = async ({ location, name }) => {
   // Check if SHELL script already has a line for error-central
   const existing = await checkFilenameForLine(filename, scriptname);
   if (existing) {
-    return console.log('=> error-central line already exists in %s file', filename);
+    return console.log('=> error-central lines already exist in %s file', filename);
   }
 
   return new Promise(
@@ -229,7 +229,7 @@ const install = async (options = { name: '', location: '' }) => {
   ]).then(() => {
     const { location, name } = options;
     console.log(`
-      => Error-central source line added to "${location}" for ${name} package.
+      => Error-central source lines added to "${location}" for ${name} package.
 
       Make sure to reload your SHELL.
     `);

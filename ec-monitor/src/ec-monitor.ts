@@ -260,7 +260,7 @@ if (require.main === module) {
       // Passing '0' means it will throw an error if process doesn't exist.
       process.kill(ecMonitorPid, 0);
       // ec-monitor already running, so we exit
-      console.log(`🐛 ec-monitor: Exists with pid ${ecMonitorPid}`);
+      console.log(`🐛 ec-monitor: Existed with pid ${ecMonitorPid}`);
       process.exit();
     }
     catch (err) {
