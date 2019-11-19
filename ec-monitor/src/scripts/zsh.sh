@@ -4,8 +4,6 @@
 # to files in directory `~/.ec/sessions/` with filenames like `XXX.txt`,
 # where XXX is the process id of that terminal.
 
-echo "Not tested on zsh..." # TODO: Test on zsh
-
 # NOTE: this file must be called with `source` not `bash`
 # https://stackoverflow.com/a/52575087/59913
 # https://stackoverflow.com/questions/47302898/redirect-stdout-and-stderr-to-file-permanently-but-keep-printing-them
@@ -28,8 +26,10 @@ fi
 exec 2> >(tee ~/.ec/sessions/$$.txt 1>&2)
 
 # Launch monitor (it will check if its already running.)
-# TODO: Change to global npm once we have this in npm package.
-screen -S ec-monitor -dm node ~/code/ec/ec-monitor/out/ec-monitor.js
+node /usr/local/lib/node_modules/error-central/out/ec-monitor.js &
+disown
+# Alternate launch method that doesn't print anything:
+# screen -S ec-monitor -dm node /usr/local/lib/node_modules/error-central/out/ec-monitor.js
 
 # Get current pwd of bash session with:
 # https://stackoverflow.com/questions/8327139/working-directory-of-running-process-on-mac-os

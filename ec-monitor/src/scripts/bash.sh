@@ -36,8 +36,10 @@ fi
 
 
 # Launch monitor (it will check if its already running.)
-# TODO: Change to global npm once we have this in npm package.
-screen -S ec-monitor -dm node ~/code/ec/ec-monitor/out/ec-monitor.js
+node /usr/local/lib/node_modules/error-central/out/ec-monitor.js &
+disown
+# Alternate launch method that doesn't print anything:
+# screen -S ec-monitor -dm node /usr/local/lib/node_modules/error-central/out/ec-monitor.js
 
 # Get current pwd of bash session with:
 # https://stackoverflow.com/questions/8327139/working-directory-of-running-process-on-mac-os

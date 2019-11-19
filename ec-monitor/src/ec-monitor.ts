@@ -260,7 +260,7 @@ if (require.main === module) {
       // Passing '0' means it will throw an error if process doesn't exist.
       process.kill(ecMonitorPid, 0);
       // ec-monitor already running, so we exit
-      console.log(`ec-monitor already running with pid ${ecMonitorPid}. Exiting.`);
+      console.log(`🐛 ec-monitor: Exists with pid ${ecMonitorPid}`);
       process.exit();
     }
     catch (err) {
@@ -276,7 +276,7 @@ if (require.main === module) {
     postToCloud(foundError);
   });
 
-  console.log(`🐛 ec-monitor: running with with pid ${process.pid}`);
+  console.log(`🐛 ec-monitor: Launched with pid ${process.pid}`);
 }
 
 module.exports = ErrorCentralMonitor;
