@@ -8,10 +8,35 @@
       "type": "node",
       "request": "launch",
       "name": "Launch TS Program",
-      "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/ec-monitor.ts",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/src/ec-monitor.ts",
       "preLaunchTask": "tsc: build - tsconfig.json",
-      "outFiles": ["${workspaceFolder}/**/*.js"]
+      "outFiles": [
+        "${workspaceFolder}/**/*.js"
+      ],
+      "env": {
+        // Uncomment this to output debugging info into file.
+        // "TABTAB_DEBUG": "debug.out"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch ec postinstall",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/src/postinstall.ts",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": [
+        "${workspaceFolder}/**/*.js"
+      ],
+      "env": {
+        // Uncomment this to output debugging info into file.
+        // "TABTAB_DEBUG": "debug.out"
+      }
     }
   ]
 }

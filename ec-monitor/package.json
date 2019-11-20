@@ -1,26 +1,45 @@
 {
-  "name": "ec-monitor",
-  "version": "0.0.1",
-  "description": "Montitor logs from ec bash script and send to cloud.",
+  "name": "error-central",
+  "version": "0.0.19",
+  "description": "Montitor stderr for logs.",
   "repository": {
     "type": "git",
     "url": "https://github.com/error-central/error-central.git"
   },
   "main": "out/ec-monitor.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "out/**/*",
+    "src/scripts/**/*"
+  ],
   "scripts": {
+    "postinstall": "node ./out/postinstall.js",
+    "uninstall": "node ./out/uninstall.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "prepublish": "tsc",
   "keywords": [
-    "ec"
+    "ec",
+    "error",
+    "central",
+    "error-central"
   ],
   "author": "Stan James",
   "license": "MIT",
+  "bin": {
+    "error-central": "bin/error-central.js"
+  },
   "dependencies": {
     "@types/tail": "^2.0.0",
     "axios": "^0.19.0",
+    "chalk": "^3.0.0",
+    "es6-promisify": "^6.0.2",
     "fs": "0.0.1-security",
+    "inquirer": "^7.0.0",
+    "mkdirp": "^0.5.1",
     "path": "^0.12.7",
-    "tail": "^2.0.3"
+    "tail": "^2.0.3",
+    "untildify": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^12.12.7",
