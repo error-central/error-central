@@ -24,6 +24,9 @@ h1 {
   margin-top: 5px;
   border: 1px solid gray;
   border-radius: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 6em;
 }
 
 .stackex-answer {
@@ -51,4 +54,10 @@ h1 {
 
 .ec-links a {
   margin: 5px;
+}
+
+hr {
+  margin-top: 2em;
+  margin-bottom: 2em;
+  border: 1px solid gray;
 }

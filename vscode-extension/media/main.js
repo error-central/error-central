@@ -56,29 +56,31 @@
       case "ec":
         initErrorDiv(message);
         break;
-      case "ec-results":
+      case "questions":
         const questionDivTemplate = document.getElementById("stackex-question-template");
-        const answerDivTemplate = document.getElementById("stackex-answer-template");
-        let errorDiv = document.getElementById(errorId(message));
-        if (errorDiv == null) {
-          // initialize it if not already initialized
-          errorDiv = initErrorDiv(message);
+        //const answerDivTemplate = document.getElementById("stackex-answer-template");
+
+        let questionsDiv = document.getElementById('stackex-questions');
+        while (questionsDiv.hasChildNodes()) {
+          questionsDiv.removeChild(questionsDiv.lastChild);
         }
-        let questionsDiv = errorDiv.getElementsByClassName('stackex-questions')[0];
+
         // iterate over questions and render them
-        message.questions.forEach(question => {
+        message.questions.slice(0, 10).forEach(question => {
           let questionDiv = questionDivTemplate.cloneNode(true);
-          questionDiv.getElementsByClassName('stackex-post-body')[0].innerHTML = question['body'];
-          questionDiv.getElementsByClassName('stackex-question-title')[0].innerText = question['title'];
+          questionDiv.getElementsByClassName('stackex-post-body')[0].innerHTML = question['body'].substring(0, 300);
+          let titleA = questionDiv.getElementsByClassName('stackex-question-title')[0];
+          titleA.innerText = question['title'];
+          titleA.href = question['link'];
           questionDiv.addEventListener('click', () => {
             // todo: toggle others
           })
           let answersDiv = questionDiv.getElementsByClassName('stackex-answers')[0];
-          question['answers'].forEach(answer => {
+          /* question['answers'].forEach(answer => {
             let answerDiv = answerDivTemplate.cloneNode(true);
             answerDiv.getElementsByClassName('stackex-post-body')[0].innerHTML = answer['body'];
             answersDiv.appendChild(answerDiv);
-          })
+          }) */
           questionsDiv.appendChild(questionDiv);
         })
         break;
