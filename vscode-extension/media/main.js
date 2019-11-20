@@ -47,7 +47,7 @@
     ecDiv.innerHTML += oldState.ecDivTextContent;
   } else {
     // Webview is launched for first time
-    ecDiv.textContent = "Montioring stderr...\n";
+    ecDiv.textContent = "No errors detected.\n";
   }
   // Handle messages sent from the extension to the webview
   window.addEventListener("message", event => {
