@@ -65,7 +65,7 @@
           questionsDiv.removeChild(questionsDiv.lastChild);
         }
 
-        // iterate over questions and render them
+        // Iterate over top questions and render them
         message.questions.slice(0, 10).forEach(question => {
           let questionDiv = questionDivTemplate.cloneNode(true);
           questionDiv.getElementsByClassName('stackex-post-body')[0].innerHTML = question['body'].substring(0, 300);
