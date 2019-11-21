@@ -20,9 +20,7 @@ echo "🐛 ec: Saving stderr to file: \"~/.ec/sessions/$$.txt"\"
 
 # Run diffenv, if it's installed
 if [ -x "$(command -v diffenv)" ]; then
-  # Create .ec/diffenv directory if not already there
-  mkdir -p ~/.ec/diffenv
-  diffenv > ~/.ec/diffenv/$$.yaml
+  diffenv > ~/.ec/sessions/$$.diffenv.yaml
 fi
 
 # Log only stderr (Normal case)

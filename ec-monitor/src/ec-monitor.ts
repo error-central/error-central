@@ -47,6 +47,9 @@ class ErrorCentralMonitor extends EventEmitter {
         return console.error(`Unable to scan ec directory: ${err}`);
       }
       files.forEach(file => {
+        if (!file.endsWith(".txt")) {
+          return;
+        }
         const filePath = path.join(this._errlogPath, file);
         const alreadyFollowed = (filePath in this._filesBeingTailed);
         let processExists;
@@ -56,9 +59,11 @@ class ErrorCentralMonitor extends EventEmitter {
           processExists = true;
         }
         catch (err) {
-          console.log(`Deleting dead session ${filePath}`);
+          console.log(`Deleting stale session ${filePath}`);
           fs.unlink(filePath, e => console.log);
           processExists = false;
+          // Delete diffenv data, if it exists
+          fs.unlink(filePath.replace(".txt", ".diffenv.yaml"), e => console.log);
         }
 
         if (!alreadyFollowed && processExists) {
