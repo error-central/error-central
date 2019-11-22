@@ -25,8 +25,9 @@ you to work on all EC components simultaneously._
    code ../ec.code-workspace
    ```
 
-2. Select `Launch VSCode Extension` from VS Code debug launcher.
-   ![image](https://user-images.githubusercontent.com/673455/69438547-760ed280-0d02-11ea-94c5-e9075e0b5d53.png)
+2. Select `Launch VSCode Extension` from VS Code debug launcher: 
+
+   <img src="https://user-images.githubusercontent.com/673455/69438547-760ed280-0d02-11ea-94c5-e9075e0b5d53.png" width="300" heigh="29"/>
 
 3. A new instance of VS Code will launch. Press
    <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> and run the
