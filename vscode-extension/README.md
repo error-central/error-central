@@ -16,7 +16,6 @@ you to work on all EC components simultaneously._
 
    cd ec-monitor/
    npm install
-   tsc --project . # Compile ts into js
    npm link # Create system symlink for `ec-monitor`
 
    cd ../vscode-extension
