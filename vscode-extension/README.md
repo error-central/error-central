@@ -5,7 +5,7 @@
 _We reccomend using the VS Code workspace `./ec.code-workspace` which allows
 you to work on all EC components simultaneously._
 
-1. For development it is best to _link_ to the `ec-monitor` module, so changes
+1. For development it is best to [_link_](https://docs.npmjs.com/cli/link.html) to the `ec-monitor` module, so changes
    to its code are immediately used elsewhere. Do this with
    the following commands:
 
