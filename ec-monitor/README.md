@@ -41,6 +41,7 @@ To capture errors, we need to install a script that runs each session.
 
 + error-central@0.0.22
 updated 1 package in 30.496s
+$
 ```
 
 It will be started by default in new sessions. Activate it in the current session like this: 
@@ -48,6 +49,7 @@ It will be started by default in new sessions. Activate it in the current sessio
 $source ~/.bash_profile
 
 🐛 ec: Saving stderr to file: "~/.ec/sessions/1033.txt"
+$
 ```
 
 Then you can test it like this:
@@ -61,6 +63,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
 NameError: name 'q' is not defined
+>>>
 ```
 
 See if your error appears on the debugging page here: http://wanderingstan.com/ec/ec-dump.php
