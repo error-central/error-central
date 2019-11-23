@@ -13,7 +13,8 @@
     "src/scripts/**/*"
   ],
   "scripts": {
-    "postinstall": "npx tsc --project . && node ./out/postinstall.js",
+    "prepare": "npx tsc --project .",
+    "postinstall": "node ./out/postinstall.js",
     "uninstall": "node ./out/uninstall.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
