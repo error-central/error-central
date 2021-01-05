@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@types/tail": "^2.0.0",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "chalk": "^3.0.0",
     "es6-promisify": "^6.0.2",
     "fs": "0.0.1-security",
